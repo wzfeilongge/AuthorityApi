@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Authoritiy.IServices;
+using Authority.Business.Business;
 using Authority.IRepository;
 using Authority.IRepository.Base;
 using Authority.Model.Model;
@@ -14,6 +15,7 @@ using Authority.Repository;
 using Authority.Services;
 using Authority.Web.Api.AOP.Filter;
 using Authority.Web.Api.JwtHelper;
+using AutoMapper;
 using CompareMoney.Core.Api.Log;
 using log4net;
 using log4net.Config;
@@ -55,8 +57,11 @@ namespace Authority.Web.Api
                 o.Filters.Add(typeof(GlobalExceptionFilter)); //注入异常
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            #region 注入AutoMapper
+            services.AddAutoMapper(typeof(Startup));
+            #endregion
 
-            #region Swagger
+            #region 注入Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info
@@ -74,7 +79,7 @@ namespace Authority.Web.Api
 
             #endregion
 
-            #region Token注入           
+            #region 注入Token           
             services.AddSingleton<IJwtInterface, JwtHelpers>(); //注入jwt
 
             services.AddAuthorization(options =>
@@ -112,6 +117,12 @@ namespace Authority.Web.Api
             services.AddScoped<DbcontextRepository>();
             #endregion
 
+            #region 注入业务逻辑
+
+            services.AddSingleton<IAuthorityBusinessInterface, AuthorityBusinessHandle>();
+
+            #endregion
+
             #region 注入全局异常的日志
             services.AddSingleton<ILoggerHelper, LogHelper>(); //注入全局日志
             #endregion
@@ -127,13 +138,11 @@ namespace Authority.Web.Api
             services.AddSingleton<IDepartmentRepository, DepartmentsRepository>();//Department
 
             #endregion
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-
             #region Contrllers Log
             app.UseStaticFiles();
             //使用NLog作为日志记录工具
@@ -142,6 +151,7 @@ namespace Authority.Web.Api
             env.ConfigureNLog("NIog.config");
             #endregion
 
+            #region 处理环境
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -150,6 +160,7 @@ namespace Authority.Web.Api
             {
                 app.UseExceptionHandler("/Error");
             }
+            #endregion
 
             #region  中间件Common
             app.UseCookiePolicy();    // 使用cookie

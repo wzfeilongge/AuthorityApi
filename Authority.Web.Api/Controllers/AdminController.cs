@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Authoritiy.IServices;
+using Authority.Applicaion.ViewModel;
+using Authority.Business.Business;
 using Authority.Model.Model;
 using Authority.Web.Api.ControllerModel;
 using Microsoft.AspNetCore.Authorization;
@@ -23,11 +25,16 @@ namespace Authority.Web.Api.Controllers
         private readonly IDepartmentService _departmentService;
 
         private readonly ILogger<AdminController> _Apiloger;
-        public AdminController(IUserServices userServices, ILogger<AdminController> Apiloger, IDepartmentService departmentService)
+
+        private readonly IAuthorityBusinessInterface _authorityBusinessInterface;
+
+        public AdminController(IUserServices userServices, ILogger<AdminController> Apiloger, IDepartmentService departmentService,
+             IAuthorityBusinessInterface authorityBusinessInterface)
         {
             _userServices = userServices;
             _Apiloger = Apiloger;
             _departmentService = departmentService;
+            _authorityBusinessInterface = authorityBusinessInterface;
         }
 
         #endregion
@@ -122,7 +129,10 @@ namespace Authority.Web.Api.Controllers
             var result = await _userServices.QueryListInfornormal(State);
             if (result != null)
             {
-                return Ok(new SucessModelData<List<User>>(result));
+                if (result.Count==0) { return Ok(new SucessModelData<object>(null)); }
+
+                var ViewModel = _authorityBusinessInterface.GetDtoModels(result);
+                return Ok(new SucessModelData<List<UserViewModel>>(ViewModel));
             }
             return Ok(new JsonFailCatch("查询失败"));
         }
@@ -136,21 +146,15 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy = ("SystemOrAdmin"))]
         public async Task<IActionResult> ChangeUserDepartment([FromBody] ChangeDepartmentModel ChangeModel)
         {
-            var model = await _userServices.GetModelAsync(u => u.UserName == ChangeModel.UserName);
+            var model = await _userServices.GetModelAsync(u => u.UserName == ChangeModel.UserName&&u.Department==ChangeModel.OldDepartment);
             if (model != null)
-            {
-                var olddepaments = await _departmentService.QueryDepartment(ChangeModel.OldDepartment);
-                var newdepaments = await _departmentService.QueryDepartment(ChangeModel.NewDepartment);
-                model.Department = ChangeModel.NewDepartment;
-              //  olddepaments.Count = olddepaments.Count--;
-              //   newdepaments.Count = newdepaments.Count++;
-                var istrueold = await _departmentService.Modfiy(olddepaments);
-                var istruenew = await _departmentService.Modfiy(newdepaments);
-                if (istrueold && istruenew)
+            {                               
+                model.Department = ChangeModel.NewDepartment;              
+                var istruenew = await _userServices.Modfiy(model);
+                if (istruenew)
                 {
                     return Ok(new SucessModel());
-                }
-               
+                }            
             }
             return Ok(new JsonFailCatch("编辑失败"));
         }
@@ -166,18 +170,13 @@ namespace Authority.Web.Api.Controllers
             var UserList = await _userServices.QueryListInforDepartment(DepartmentName);
             if (UserList != null)
             {
-                return Ok(new SucessModelData<List<User>>(UserList));
+                var viewModel = _authorityBusinessInterface.GetDtoModels(UserList);
+                return Ok(new SucessModelData<List<UserViewModel>>(viewModel));
             }
 
             return Ok(new SucessModelData<object>(null));
 
         }
-
-
-
-
-
-
         #endregion
 
         #region 管理员权限 部门类
@@ -254,7 +253,8 @@ namespace Authority.Web.Api.Controllers
             var model = await _departmentService.QueryList();
             if (model != null)
             {
-                return Ok(new SucessModelData<List<Departments>>(model));
+                var ViewModel = _authorityBusinessInterface.GetDtoModelDepartment(model);
+                return Ok(new SucessModelData<List<DepartmentsViewModel>>(ViewModel));
             }
             return Ok(new SucessModelData<object>(null));
         }
@@ -268,21 +268,12 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy ="SystemOrAdmin")]
         public async Task<IActionResult> UpdateDepartment()
         {
-
             var flag = await  _departmentService.UpdateDepartments();
             if (flag) {
                 return Ok(new SucessModel());
-
             }
-
             return Ok(new JsonFailCatch("更新失败"));
-
         }
-
-
-
-
-
         #endregion
 
 

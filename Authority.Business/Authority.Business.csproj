@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Business\" />
+    <ProjectReference Include="..\Authority.Applicaion\Authority.Applicaion.csproj" />
   </ItemGroup>
 
 </Project>

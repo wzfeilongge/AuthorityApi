@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Authoritiy.IServices
 {
-  public  interface IUserServices : IBaseEntity<User>
+    public interface IUserServices : IBaseEntity<User>
     {
 
         /// <summary>
@@ -17,14 +17,14 @@ namespace Authoritiy.IServices
         /// <param name="name"></param>
         /// <param name="Password"></param>
         /// <returns></returns>
-        Task<User> Login(string name, string Password); 
+        Task<User> Login(string name, string Password);
 
         /// <summary>
         /// 加入一名员工
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<User> AddUser(User user); 
+        Task<User> AddUser(User user);
 
         /// <summary>
         /// 删除一个员工
@@ -58,8 +58,7 @@ namespace Authoritiy.IServices
         /// <param name="UserName"></param>
         /// <param name="Password"></param>
         /// <returns></returns>
-        Task<bool> ChangePassword(string UserName,string OldPassWord,string NewPassWord);
-
+        Task<bool> ChangePassword(string UserName, string OldPassWord, string NewPassWord);
 
         /// <summary>
         /// 部门名称查询当前部门所有的员工
@@ -68,16 +67,11 @@ namespace Authoritiy.IServices
         /// <returns></returns>
         Task<List<User>> QueryListInforDepartment(string DepartmentName);
 
-
-
-
-
-
-
-
-
-
-
-
+        /// <summary>
+        /// 保存
+        /// </summary>
+        /// <param name="User"></param>
+        /// <returns></returns>
+        Task<bool> Modfiy(User User);
     }
 }

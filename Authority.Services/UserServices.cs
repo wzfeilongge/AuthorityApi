@@ -58,9 +58,12 @@ namespace Authority.Services
             if (model != null)
             {
                 model.PassWord = FacePayEncrypt.Encrypt(NewPassWord);
-                await _userServices.Modify(model);//修改属性
-                _myLogger.LogInformation($"{DateTime.Now.ToString()}------{UserName}已经修改了密码");
-                return true;
+              var istrue=  await _userServices.Modify(model);//修改属性
+                if (istrue>1) {
+                    _myLogger.LogInformation($"{DateTime.Now.ToString()}------{UserName}已经修改了密码");
+                    return true;
+                }
+                _myLogger.LogInformation($"{DateTime.Now.ToString()}------{UserName}用户密码修改失败");
             }
             return false;
         }
@@ -120,6 +123,21 @@ namespace Authority.Services
                 return (model);
             }
             return null;
+        }
+
+        /// <summary>
+        /// 保存修改的Model
+        /// </summary>
+        /// <param name="User"></param>
+        /// <returns></returns>
+        public async Task<bool> Modfiy(User User)
+        {
+            int istrue = await _userServices.Modify(User);
+            if (istrue > 0)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

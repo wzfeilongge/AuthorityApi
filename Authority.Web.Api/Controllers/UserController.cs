@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Authoritiy.IServices;
+using Authority.Applicaion.ViewModel;
+using Authority.Business.Business;
 using Authority.Model.Model;
 using Authority.Web.Api.ControllerModel;
 using Authority.Web.Api.JwtHelper;
@@ -24,11 +26,14 @@ namespace Authority.Web.Api.Controllers
 
         private readonly IJwtInterface _IJwtInterface;
 
-        public UserController(IUserServices userServices, ILogger<UserController> Apiloger, IJwtInterface IJwtInterface)
+        private readonly IAuthorityBusinessInterface _authorityBusinessInterface;
+
+        public UserController(IUserServices userServices, ILogger<UserController> Apiloger, IJwtInterface IJwtInterface, IAuthorityBusinessInterface authorityBusinessInterface)
         {
             _userServices = userServices;
             _Apiloger = Apiloger;
             _IJwtInterface = IJwtInterface;
+            _authorityBusinessInterface = authorityBusinessInterface;
         }
 
         #endregion
@@ -57,7 +62,8 @@ namespace Authority.Web.Api.Controllers
                     result.PassWord = "******";
                     result.AdminPassword = "******";
                 }
-                return Ok(new SucessModelData<User>(result));
+                var model = _authorityBusinessInterface.GetDtoModel(result);
+                return Ok(new SucessModelData<UserViewModel>(model));
             }
             return Ok(new JsonFailCatch("登录失败"));
         }
