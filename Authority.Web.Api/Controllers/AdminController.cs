@@ -22,8 +22,6 @@ namespace Authority.Web.Api.Controllers
 
         private readonly IDepartmentService _departmentService;
 
-
-
         private readonly ILogger<AdminController> _Apiloger;
         public AdminController(IUserServices userServices, ILogger<AdminController> Apiloger, IDepartmentService departmentService)
         {
@@ -34,7 +32,6 @@ namespace Authority.Web.Api.Controllers
 
         #endregion
 
-
         #region 管理员权限 员工类
 
         /// <summary>
@@ -42,7 +39,7 @@ namespace Authority.Web.Api.Controllers
         /// </summary>
         /// <param name="User"></param>
         /// <returns></returns>
-        [HttpPut("AddUser", Name = ("AddUser"))]
+        [HttpPost("AddUser", Name = ("AddUser"))]
         [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> AddUser([FromBody] User User)
         {
@@ -79,8 +76,14 @@ namespace Authority.Web.Api.Controllers
                 var result = await _userServices.DeleteUser(User);
                 if (result)
                 {
-                    _Apiloger.LogInformation($"成功删除一个员工{User.UserName}");
-                    return Ok(new SucessModel());
+                    var model = await _departmentService.QueryDepartment(User.Department);
+                    if (model != null)
+                    {
+                        model.Count--;
+                        await _departmentService.Modfiy(model);
+                        _Apiloger.LogInformation($"成功删除一个员工{User.UserName}");
+                        return Ok(new SucessModel());
+                    }
                 }
             }
             return Ok(new JsonFailCatch("用户删除失败"));
@@ -124,9 +127,58 @@ namespace Authority.Web.Api.Controllers
             return Ok(new JsonFailCatch("查询失败"));
         }
 
+        /// <summary>
+        /// 修改员工部门
+        /// </summary>
+        /// <param name="ChangeModel"></param>
+        /// <returns></returns>
+        [HttpPut("ChangeUserDepartment", Name = ("ChangeUserDepartment"))]
+        [Authorize(Policy = ("SystemOrAdmin"))]
+        public async Task<IActionResult> ChangeUserDepartment([FromBody] ChangeDepartmentModel ChangeModel)
+        {
+            var model = await _userServices.GetModelAsync(u => u.UserName == ChangeModel.UserName);
+            if (model != null)
+            {
+                var olddepaments = await _departmentService.QueryDepartment(ChangeModel.OldDepartment);
+                var newdepaments = await _departmentService.QueryDepartment(ChangeModel.NewDepartment);
+                model.Department = ChangeModel.NewDepartment;
+              //  olddepaments.Count = olddepaments.Count--;
+              //   newdepaments.Count = newdepaments.Count++;
+                var istrueold = await _departmentService.Modfiy(olddepaments);
+                var istruenew = await _departmentService.Modfiy(newdepaments);
+                if (istrueold && istruenew)
+                {
+                    return Ok(new SucessModel());
+                }
+               
+            }
+            return Ok(new JsonFailCatch("编辑失败"));
+        }
+
+        /// <summary>
+        /// 根据部门名称查询当前部门所有的员工
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetUserInforDepartment", Name = "GetUserInforDepartment")]
+        [Authorize(Policy = "SystemOrAdmin")]
+        public async Task<IActionResult> GetUserInforDepartment([FromBody] string DepartmentName)
+        {
+            var UserList = await _userServices.QueryListInforDepartment(DepartmentName);
+            if (UserList != null)
+            {
+                return Ok(new SucessModelData<List<User>>(UserList));
+            }
+
+            return Ok(new SucessModelData<object>(null));
+
+        }
+
+
+
+
+
+
         #endregion
-
-
 
         #region 管理员权限 部门类
 
@@ -135,7 +187,7 @@ namespace Authority.Web.Api.Controllers
         /// </summary>
         /// <param name="departments"></param>
         /// <returns></returns>
-        [HttpPut("AddDepartment", Name = "AddDepartment")]
+        [HttpPost("AddDepartment", Name = "AddDepartment")]
         [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> AddDepartment([FromBody]Departments departments)
         {
@@ -176,9 +228,10 @@ namespace Authority.Web.Api.Controllers
         /// </summary>
         /// <param name="departments"></param>
         /// <returns></returns>
+        [HttpPut("EditDepartment", Name = "EditDepartment")]
+        [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> EditDepartment([FromBody] Departments departments)
         {
-
             if (departments != null)
             {
                 var model = await _departmentService.EditDepartment(departments);
@@ -188,12 +241,51 @@ namespace Authority.Web.Api.Controllers
                 }
             }
             return Ok(new JsonFailCatch("编辑修改部门失败"));
+        }
+
+        /// <summary>
+        /// 查询所有的部门
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("QueryListDepartment", Name = "QueryListDepartment")]
+        [Authorize(Policy = "SystemOrAdmin")]
+        public async Task<IActionResult> QueryListDepartment()
+        {
+            var model = await _departmentService.QueryList();
+            if (model != null)
+            {
+                return Ok(new SucessModelData<List<Departments>>(model));
+            }
+            return Ok(new SucessModelData<object>(null));
+        }
+
+
+        /// <summary>
+        /// 更新数据库中的数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("UpdateDepartment", Name = "UpdateDepartment")]
+        [Authorize(Policy ="SystemOrAdmin")]
+        public async Task<IActionResult> UpdateDepartment()
+        {
+
+            var flag = await  _departmentService.UpdateDepartments();
+            if (flag) {
+                return Ok(new SucessModel());
+
+            }
+
+            return Ok(new JsonFailCatch("更新失败"));
 
         }
 
 
 
+
+
         #endregion
+
+
 
 
 

@@ -5,26 +5,20 @@ using System.Threading.Tasks;
 
 namespace Authority.Web.Api.ControllerModel
 {
-    public class ChangePassWordModel
+    public class ChangeDepartmentModel
     {
         /// <summary>
         /// 用户名
         /// </summary>
         public string UserName { get; set; }
-  
         /// <summary>
-        /// 旧密码
+        /// 旧部门
         /// </summary>
-        public string OldPassword { get; set; }
-
+        public string OldDepartment { get; set; }
         /// <summary>
-        /// 新密码
+        /// 新部门
         /// </summary>
-        public string NewPassWord { get; set; }
-
-
-
-
+        public string NewDepartment { get; set; }
 
 
     }

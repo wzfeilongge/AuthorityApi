@@ -42,7 +42,6 @@ namespace Authority.Web.Api.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel request)
         {
             var result = await _userServices.Login(request.UserName, request.PassWord);
-            _Apiloger.LogInformation($"{HttpContext.Response.StatusCode}");
             if (result != null)
             {
                 TokenModelJwt t = new TokenModelJwt
@@ -68,8 +67,7 @@ namespace Authority.Web.Api.Controllers
         /// <summary>
         /// 修改自己的状态
         /// </summary>
-        /// <param name="User"></param>
-        /// <param name="UserName"></param>
+        /// <param name="User"></param>     
         /// <returns></returns>
         [HttpPut("ChangeStateForUp", Name = ("ChangeStateForUp"))]
         [Authorize(Policy = ("All"))]
@@ -86,16 +84,16 @@ namespace Authority.Web.Api.Controllers
             return Ok(new JsonFailCatch("修改用户失败"));
         }
 
-        /// <summary>
-        /// 修改自己的登录密码
-        /// </summary>
-        /// <param name="User"></param>
-        /// <returns></returns>
-        [HttpPost("ChangePassWord", Name = ("ChangePassWord"))]
+      /// <summary>
+      /// 修改自己的密码
+      /// </summary>
+      /// <param name="Model"></param>
+      /// <returns></returns>
+        [HttpPut("ChangePassWord", Name = ("ChangePassWord"))]
         [Authorize(Policy = ("All"))]
         public async Task<IActionResult> ChangePassWord([FromBody] ChangePassWordModel Model)
         {
-            if (User != null)
+            if (Model != null)
             {
                 var result = await _userServices.ChangePassword(Model.UserName,Model.OldPassword,Model.NewPassWord);
                 if (result)

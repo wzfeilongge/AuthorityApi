@@ -44,7 +44,7 @@ namespace Authority.repository.Base
             {
                 sqlrealType = "Mysql";
             }
-            _myLogger.LogInformation($"Pay数据库类型是{sqlrealType}");
+            _myLogger.LogInformation($"数据库类型是{sqlrealType}");
         }
 
         #region 1.0 新增实体，返回对象
@@ -55,7 +55,7 @@ namespace Authority.repository.Base
         /// <returns>返回受影响的行数</returns>
         public async Task<TEntity> Add(TEntity model)
         {
-               _myLogger.LogInformation($"{typeof(TEntity)}HisModel 正在执行新增Model 返回行数");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行新增Model 返回行数");
             await Dbset.AddAsync(model);
             Context.SaveChanges();
             return model;
@@ -72,7 +72,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<int> AddModel(TEntity model)
         {
-              _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行增加Model 返回Model");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行增加Model 返回Model");
             await Dbset.AddAsync(model);
             return await Context.SaveChangesAsync();
 
@@ -88,7 +88,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<int> Count(Expression<Func<TEntity, bool>> whereLambda)
         {
-              _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行查询返回受影响的行数");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行查询返回受影响的行数");
             // .Count(whereLambda);
             return await Dbset.CountAsync(whereLambda);
 
@@ -104,7 +104,7 @@ namespace Authority.repository.Base
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DelBy(Expression<Func<TEntity, bool>> delWhere)
         {
-               _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行条件删除");
+            _myLogger.LogInformation($"{typeof(TEntity)}sModel 正在执行条件删除");
             var listDeleting = await Dbset.Where(delWhere).ToListAsync();
             listDeleting.ForEach(u =>
             {
@@ -125,7 +125,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<TEntity> GetModelAsync(Expression<Func<TEntity, bool>> whereLambda)
         {
-         _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行查询单个Model 返回行数");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行查询单个Model 返回行数");
             return await Dbset.Where(whereLambda).AsNoTracking().FirstOrDefaultAsync();
         }
         #endregion
@@ -142,7 +142,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<List<TEntity>> GetPagedList<TKey>(int pageIndex, int pageSize, Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, TKey>> orderByLambda, bool isAsc = true)
         {
-                _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行分页查询");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行分页查询");
             if (isAsc)
             {
                 return await Dbset.Where(whereLambda).OrderBy(orderByLambda).Skip((pageIndex - 1) * pageSize).Take(pageSize).AsNoTracking().ToListAsync();
@@ -169,7 +169,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<List<TEntity>> Query(Expression<Func<TEntity, bool>> whereLambda)
         {
-             _myLogger.LogInformation($"{typeof(TEntity)} HisModel 正在执行查询");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行查询");
             return await Dbset.Where(whereLambda).AsNoTracking().ToListAsync();
 
 

@@ -14,19 +14,7 @@ namespace Authority.Web.Api.ControllerModel
     }
 
 
-    public class SucessModelData : SucessModel
-    {
-
-
-        public int[] Arrays { get; set; }
-        public SucessModelData(int[] array)
-        {
-            this.Msg = "排序成功";
-            this.Arrays = array;
-        }
-
-
-    }
+ 
     public class SucessModelDataJson : SucessModel
     {
 

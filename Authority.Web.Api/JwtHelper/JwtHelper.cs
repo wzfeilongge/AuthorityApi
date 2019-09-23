@@ -1,5 +1,4 @@
-﻿using Blog.Core;
-using Blog.Core.Common;
+﻿using Authority.Common.Helper;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -39,8 +38,7 @@ namespace Authority.Web.Api.JwtHelper
                 //这个就是过期时间，目前是过期1小时，可自定义，注意JWT有自己的缓冲过期时间 缓冲时间已设置为0
                 new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddHours(1)).ToUnixTimeSeconds()}"),
                 new Claim(JwtRegisteredClaimNames.Iss,iss),
-                new Claim(JwtRegisteredClaimNames.Aud,aud),
-                
+                new Claim(JwtRegisteredClaimNames.Aud,aud),               
               //  new Claim(ClaimTypes.Role,tokenModel.Role),//为了解决一个用户多个角色(比如：Admin,System)，用下边的方法
                };
 

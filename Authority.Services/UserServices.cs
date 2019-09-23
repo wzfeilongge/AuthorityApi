@@ -53,7 +53,7 @@ namespace Authority.Services
         public async Task<bool> ChangePassword(string UserName, string OldPassWord, string NewPassWord)
         {
             NewPassWord = FacePayEncrypt.Encrypt(NewPassWord);
-            OldPassWord= FacePayEncrypt.Encrypt(OldPassWord);
+            OldPassWord = FacePayEncrypt.Encrypt(OldPassWord);
             var model = await _userServices.GetModelAsync(u => u.UserName == UserName && u.PassWord == OldPassWord);
             if (model != null)
             {
@@ -78,7 +78,6 @@ namespace Authority.Services
             {
                 model.State = user.State;
                 model.Role = user.Role;
-                model.Department = user.Department;
                 model.StartTime = user.StartTime;
                 model.EndTime = user.EndTime;
                 await _userServices.Modify(model);//修改属性
@@ -96,7 +95,7 @@ namespace Authority.Services
         public async Task<bool> DeleteUser(User user)
         {
             user.PassWord = FacePayEncrypt.Encrypt(user.PassWord);
-            var model = await _userServices.DelBy(u =>u.UserName == user.UserName);
+            var model = await _userServices.DelBy(u => u.UserName == user.UserName);
             if (model > 0)
             {
                 _myLogger.LogInformation($"{DateTime.Now.ToString()}------{user.UserName}员工已经被删除 ");
@@ -129,7 +128,22 @@ namespace Authority.Services
         /// <returns></returns>         
         public async Task<List<User>> QueryList()
         {
-            var UserList = await _userServices.Query(u => u.Id > 0);         
+            var UserList = await _userServices.Query(u => u.Id > 0);
+            return UserList;
+        }
+
+        /// <summary>
+        /// 部门名称查询当前部门所有的员工
+        /// </summary>
+        /// <param name="DepartmentName"></param>
+        /// <returns></returns>
+        public async Task<List<User>> QueryListInforDepartment(string DepartmentName)
+        {
+            if (DepartmentName == string.Empty)
+            {
+                return null;
+            }
+            var UserList = await _userServices.Query(u => u.Department == DepartmentName);
             return UserList;
         }
 
@@ -139,7 +153,7 @@ namespace Authority.Services
         /// </summary>
         /// <returns></returns>
         public async Task<List<User>> QueryListInfornormal(int State)
-        {          
+        {
             var UserList = await QueryList();
             var list = UserList.Where(u => u.State == State).ToList();
             _myLogger.LogInformation($"正在查询状态为{State}的查询完毕共有{list.Count}条数据");

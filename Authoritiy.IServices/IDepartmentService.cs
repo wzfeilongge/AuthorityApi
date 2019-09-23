@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Authoritiy.IServices
 {
-   public  interface IDepartmentService : IBaseEntity<Departments>
+    public interface IDepartmentService : IBaseEntity<Departments>
     {
         Task<int> AddDepartment(Departments departments);
 
@@ -15,10 +15,13 @@ namespace Authoritiy.IServices
 
         Task<Departments> EditDepartment(Departments departments);
 
-        Task<List<Departments>> QueryList(string departments);
+        Task<List<Departments>> QueryList();
 
         Task<Departments> QueryDepartment(string DepartmentName);
 
         Task<bool> Modfiy(Departments departments);
+
+        Task<bool> UpdateDepartments();
+
     }
 }

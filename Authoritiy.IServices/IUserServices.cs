@@ -61,6 +61,14 @@ namespace Authoritiy.IServices
         Task<bool> ChangePassword(string UserName,string OldPassWord,string NewPassWord);
 
 
+        /// <summary>
+        /// 部门名称查询当前部门所有的员工
+        /// </summary>
+        /// <param name="DepartmentName"></param>
+        /// <returns></returns>
+        Task<List<User>> QueryListInforDepartment(string DepartmentName);
+
+
 
 
 

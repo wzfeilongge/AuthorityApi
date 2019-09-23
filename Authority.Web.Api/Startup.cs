@@ -29,6 +29,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Swashbuckle.AspNetCore.Swagger;
 using Web.Api.Log;
 
 namespace Authority.Web.Api
@@ -54,18 +55,35 @@ namespace Authority.Web.Api
                 o.Filters.Add(typeof(GlobalExceptionFilter)); //注入异常
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+
+            #region Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v0.1.0",
+                    Title = "Authority.API",
+                    Description = "框架说明文档",
+                    TermsOfService = "None"
+                });
+
+                var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "Authority.Web.Api.xml");//这个就是刚刚配置的xml文件名
+                c.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修改
+            });
+
+            #endregion
+
             #region Token注入           
             services.AddSingleton<IJwtInterface, JwtHelpers>(); //注入jwt
-
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("管理员", "Boss"));
-                options.AddPolicy("All", policy => policy.RequireRole("管理员", "Boss", "test", "Guest"));
+                options.AddPolicy("All", policy => policy.RequireRole("管理员", "普通用户", "test", "Guest"));
                 options.AddPolicy("testOrGuest", policy => policy.RequireRole("test", "Guest").Build());
                 options.AddPolicy("Guest", policy => policy.RequireRole("Guest").Build());
             });
-
 
             var audienceConfig = Configuration.GetSection("Audience");
             var symmetricKeyAsBase64 = audienceConfig["Secret"];
@@ -108,9 +126,6 @@ namespace Authority.Web.Api
             services.AddSingleton<IUserRepository, UserRepository>(); //User
             services.AddSingleton<IDepartmentRepository, DepartmentsRepository>();//Department
 
-
-
-
             #endregion
 
         }
@@ -131,10 +146,25 @@ namespace Authority.Web.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            if (env.IsDevelopment())
+            else
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Error");
             }
+
+            #region  中间件Common
+            app.UseCookiePolicy();    // 使用cookie
+            app.UseStatusCodePages();//把错误码返回前台，比如是404
+            #endregion
+
+            #region Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiHelp V1");
+
+                c.RoutePrefix = "";//路径配置，设置为空，表示直接访问该文件，
+            });
+            #endregion
 
             #region  Token 中间件
             app.UseAuthentication();

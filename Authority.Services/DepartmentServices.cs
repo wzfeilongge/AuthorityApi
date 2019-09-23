@@ -5,6 +5,7 @@ using Authority.Services.BaseService;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,10 +19,13 @@ namespace Authority.Services
 
         private readonly IDepartmentRepository _DepartmentRepository;
 
-        public DepartmentServices(IDepartmentRepository DepartmentRepository, ILogger<Departments> myLogger)
+        private readonly IUserRepository _UserRepository;
+
+        public DepartmentServices(IDepartmentRepository DepartmentRepository, IUserRepository UserRepository, ILogger<Departments> myLogger)
         {
             _myLogger = myLogger;
             _DepartmentRepository = DepartmentRepository;
+            _UserRepository = UserRepository;
         }
 
         #endregion
@@ -33,7 +37,7 @@ namespace Authority.Services
         /// <returns></returns>
         public async Task<int> AddDepartment(Departments departments)
         {
-            var AddModel= _DepartmentRepository.AddModel(departments); //数据库中加入一个部门的模型
+            var AddModel = _DepartmentRepository.AddModel(departments); //数据库中加入一个部门的模型
             _myLogger.LogInformation($"成功加入{departments.DepartmentName}部门-------{DateTime.Now.ToString()}");
             return await AddModel;
         }
@@ -57,54 +61,83 @@ namespace Authority.Services
         /// <returns></returns>
         public async Task<Departments> EditDepartment(Departments departments)
         {
-            var EditModel = await _DepartmentRepository.GetModelAsync(u=>u.DepartmentName==departments.DepartmentName&&u.Id==departments.Id);
-            if (EditModel!=null) {
+            var EditModel = await _DepartmentRepository.GetModelAsync(u => u.DepartmentName == departments.DepartmentName && u.Id == departments.Id);
+            if (EditModel != null)
+            {
                 _myLogger.LogInformation($"正在编辑{departments.DepartmentName}的信息");
                 EditModel.Count = departments.Count;
                 await _DepartmentRepository.Modify(EditModel);
                 return EditModel;
             }
-            return null;           
+            return null;
         }
 
+        /// <summary>
+        /// 修改实体
+        /// </summary>
+        /// <param name="departments"></param>
+        /// <returns></returns>
         public async Task<bool> Modfiy(Departments departments)
         {
             int istrue = await _DepartmentRepository.Modify(departments);
-            if (istrue>0) {
+            if (istrue > 0)
+            {
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// 查询部门
+        /// 查询单个部门
         /// </summary>
         /// <param name="DepartmentName"></param>
         /// <returns></returns>
-        public  async Task<Departments> QueryDepartment(string DepartmentName)
+        public async Task<Departments> QueryDepartment(string DepartmentName)
         {
-            var model = await _DepartmentRepository.GetModelAsync(u=>u.DepartmentName==DepartmentName);
-            _myLogger.LogInformation($"正在查询{DepartmentName}------{DateTime.Now.ToString()}");
-            if (model!=null) {
+            var model = await _DepartmentRepository.GetModelAsync(u => u.DepartmentName == DepartmentName);
+            _myLogger.LogInformation($"正在查询{DepartmentName}部门------{DateTime.Now.ToString()}");
+            if (model != null)
+            {
                 return model;
             }
-
             return null;
         }
 
         /// <summary>
-        /// 查询部门
+        /// 查询所有的部门
         /// </summary>
         /// <param name="departments"></param>
         /// <returns></returns>
-        public  async Task<List<Departments>> QueryList(string departments)
+        public async Task<List<Departments>> QueryList()
         {
-            var model = await _DepartmentRepository.Query(u=>u.DepartmentName==departments);
-            _myLogger.LogInformation($"正在查询{departments}------{DateTime.Now.ToString()}");
-            if (model!=null) {
+            var model = await _DepartmentRepository.Query(u => u.DepartmentName != null);
+            _myLogger.LogInformation($"正在查询所有的部门------{DateTime.Now.ToString()}");
+            if (model != null)
+            {
                 return model;
             }
             return null;
+        }
+
+        /// <summary>
+        /// 更新department数据库中的数据 速度较慢
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> UpdateDepartments()
+        {
+            List<string> DepartentName = new List<string>();
+            var UserList = await _UserRepository.Query(u => u.Id > 0);
+            var DepartmentList = await _DepartmentRepository.Query(u => u.Id > 0);
+            if (UserList != null)
+            {
+                foreach (var item in DepartmentList)
+                {
+                    item.Count = UserList.Where(u => u.Department == item.DepartmentName).Count();
+                     await _DepartmentRepository.Modify(item); //循环更新每个部门
+                }              
+                return true;
+            }
+            return false;
         }
     }
 }
