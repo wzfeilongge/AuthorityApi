@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Authority.repository.EF
 {
-   public class DbcontextRepository: DbContext
+    public class DbcontextRepository : DbContext
     {
         public DbcontextRepository()
         {
@@ -50,10 +50,14 @@ namespace Authority.repository.EF
 
         }
 
-         public  DbSet<User> User { get; set; }
+        public DbSet<User> User { get; set; }
 
 
         public DbSet<Departments> Departments { get; set; }
+
+        public DbSet<Sale> Sale { get; set; }
+
+        public DbSet<Product> Product { get; set; }
 
 
     }
