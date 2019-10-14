@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Authoritiy.IServices\Authoritiy.IServices.csproj" />
     <ProjectReference Include="..\Authority.Applicaion\Authority.Applicaion.csproj" />
   </ItemGroup>
 

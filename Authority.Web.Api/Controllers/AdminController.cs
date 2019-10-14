@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Authoritiy.IServices;
 using Authority.Applicaion.ViewModel;
 using Authority.Business.Business;
+using Authority.Common.HttpHelper;
 using Authority.Model.Model;
 using Authority.Web.Api.ControllerModel;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,8 @@ namespace Authority.Web.Api.Controllers
 
         private readonly IAuthorityBusinessInterface _authorityBusinessInterface;
 
+        //private readonly IUnitOfWork _unitOfWork;
+
         public AdminController(IUserServices userServices, ILogger<AdminController> Apiloger, IDepartmentService departmentService,
              IAuthorityBusinessInterface authorityBusinessInterface)
         {
@@ -35,12 +38,12 @@ namespace Authority.Web.Api.Controllers
             _Apiloger = Apiloger;
             _departmentService = departmentService;
             _authorityBusinessInterface = authorityBusinessInterface;
+            //_unitOfWork = unitOfWork;
         }
 
         #endregion
 
         #region 管理员权限 员工类
-
         /// <summary>
         /// 加入一个员工
         /// </summary>
@@ -48,11 +51,15 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPost("AddUser", Name = ("AddUser"))]
         [Authorize(Policy = "SystemOrAdmin")]
+        [UseTran]
         public async Task<IActionResult> AddUser([FromBody] User User)
         {
-            if (User != null)
+            if (ModelState.IsValid)
             {
+
+                //  _unitOfWork.BeginTran();
                 var ThisUser = await _userServices.AddUser(User);
+                //_unitOfWork.Commit();
                 if (ThisUser != null)
                 {
                     var model = await _departmentService.QueryDepartment(ThisUser.Department);
@@ -60,6 +67,7 @@ namespace Authority.Web.Api.Controllers
                     {
                         model.Count++;
                         await _departmentService.Modfiy(model);
+                        // _unitOfWork.Commit();
                         _Apiloger.LogInformation($"成功添加一个员工{ThisUser.UserName}");
                         return Ok(new SucessModel());
                     }
@@ -76,19 +84,24 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpDelete("DeleteUser", Name = ("DeleteUser"))]
         [Authorize(Policy = ("SystemOrAdmin"))]
+        [UseTran]
         public async Task<IActionResult> DeleteUser([FromBody] User User)
         {
-            if (User != null)
+            if (ModelState.IsValid)
             {
+                //_unitOfWork.BeginTran();
                 var result = await _userServices.DeleteUser(User);
+                //_unitOfWork.Commit();
                 if (result)
                 {
                     var model = await _departmentService.QueryDepartment(User.Department);
                     if (model != null)
                     {
                         model.Count--;
+                        //       _unitOfWork.Commit();
                         await _departmentService.Modfiy(model);
-                        _Apiloger.LogInformation($"成功删除一个员工{User.UserName}");
+                        //       _unitOfWork.Commit();
+                        _Apiloger.LogInformation($"成功删除一个员工{nameof(User.UserName)}");
                         return Ok(new SucessModel());
                     }
                 }
@@ -103,11 +116,14 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPut("ChangeState", Name = ("ChangeState"))]
         [Authorize(Policy = ("SystemOrAdmin"))]
+        [UseTran]
         public async Task<IActionResult> ChangeState([FromBody] User Users)
         {
-            if (Users != null)
+            if (ModelState.IsValid)
             {
+                //  _unitOfWork.BeginTran();
                 var result = await _userServices.ChangeUserState(Users);
+                //_unitOfWork.Commit();
                 if (result)
                 {
                     return Ok(new SucessModel());
@@ -126,13 +142,19 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy = ("SystemOrAdmin"))]
         public async Task<IActionResult> QueryUser([FromBody] int State)
         {
-            var result = await _userServices.QueryListInfornormal(State);
-            if (result != null)
+            if (ModelState.IsValid)
             {
-                if (result.Count==0) { return Ok(new SucessModelData<object>(null)); }
+                var result = await _userServices.QueryListInfornormal(State);
+                if (result != null)
+                {
+                    if (result.Count == 0)
+                    {
+                        return Ok(new SucessModelData<object>(null));
+                    }
 
-                var ViewModel = _authorityBusinessInterface.GetDtoModels(result);
-                return Ok(new SucessModelData<List<UserViewModel>>(ViewModel));
+                    var ViewModel = _authorityBusinessInterface.GetDtoModels(result);
+                    return Ok(new SucessModelData<List<UserViewModel>>(ViewModel));
+                }
             }
             return Ok(new JsonFailCatch("查询失败"));
         }
@@ -144,17 +166,27 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPut("ChangeUserDepartment", Name = ("ChangeUserDepartment"))]
         [Authorize(Policy = ("SystemOrAdmin"))]
+        [UseTran]
         public async Task<IActionResult> ChangeUserDepartment([FromBody] ChangeDepartmentModel ChangeModel)
         {
-            var model = await _userServices.GetModelAsync(u => u.UserName == ChangeModel.UserName&&u.Department==ChangeModel.OldDepartment);
-            if (model != null)
-            {                               
-                model.Department = ChangeModel.NewDepartment;              
-                var istruenew = await _userServices.Modfiy(model);
-                if (istruenew)
+            if (ModelState.IsValid)
+            {
+
+
+                var model = await _userServices.GetModelAsync(u => u.UserName == ChangeModel.UserName && u.Department == ChangeModel.OldDepartment);
+
+                if (model != null)
                 {
-                    return Ok(new SucessModel());
-                }            
+                    //   _unitOfWork.BeginTran();
+                    model.Department = ChangeModel.NewDepartment;
+                    var istruenew = await _userServices.Modfiy(model);
+                    //_unitOfWork.Commit();
+                    if (istruenew)
+                    {
+                        return Ok(new SucessModel());
+                    }
+                }
+
             }
             return Ok(new JsonFailCatch("编辑失败"));
         }
@@ -167,13 +199,15 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> GetUserInforDepartment([FromBody] string DepartmentName)
         {
-            var UserList = await _userServices.QueryListInforDepartment(DepartmentName);
-            if (UserList != null)
+            if (ModelState.IsValid)
             {
-                var viewModel = _authorityBusinessInterface.GetDtoModels(UserList);
-                return Ok(new SucessModelData<List<UserViewModel>>(viewModel));
+                var UserList = await _userServices.QueryListInforDepartment(DepartmentName);
+                if (UserList != null)
+                {
+                    var viewModel = _authorityBusinessInterface.GetDtoModels(UserList);
+                    return Ok(new SucessModelData<List<UserViewModel>>(viewModel));
+                }
             }
-
             return Ok(new SucessModelData<object>(null));
 
         }
@@ -188,11 +222,15 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPost("AddDepartment", Name = "AddDepartment")]
         [Authorize(Policy = "SystemOrAdmin")]
+        [UseTran]
         public async Task<IActionResult> AddDepartment([FromBody]Departments departments)
         {
-            if (departments != null)
+            if (ModelState.IsValid)
             {
+
+                // _unitOfWork.BeginTran();
                 var Cont = await _departmentService.AddDepartment(departments);
+                //_unitOfWork.Commit();
                 if (Cont > 0)
                 {
                     return Ok(new SucessModel());
@@ -210,7 +248,7 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> DelDepartment([FromBody] Departments departments)
         {
-            if (departments != null)
+            if (ModelState.IsValid)
             {
                 var Cont = await _departmentService.DelDepartment(departments);
 
@@ -231,7 +269,7 @@ namespace Authority.Web.Api.Controllers
         [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> EditDepartment([FromBody] Departments departments)
         {
-            if (departments != null)
+            if (ModelState.IsValid)
             {
                 var model = await _departmentService.EditDepartment(departments);
                 if (model != null)
@@ -248,13 +286,19 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpGet("QueryListDepartment", Name = "QueryListDepartment")]
         [Authorize(Policy = "SystemOrAdmin")]
+        [UseTran]
         public async Task<IActionResult> QueryListDepartment()
         {
-            var model = await _departmentService.QueryList();
-            if (model != null)
+            if (ModelState.IsValid)
             {
-                var ViewModel = _authorityBusinessInterface.GetDtoModelDepartment(model);
-                return Ok(new SucessModelData<List<DepartmentsViewModel>>(ViewModel));
+                //_unitOfWork.BeginTran();
+                var model = await _departmentService.QueryList();
+                // _unitOfWork.Commit();
+                if (model != null)
+                {
+                    var ViewModel = _authorityBusinessInterface.GetDtoModelDepartment(model);
+                    return Ok(new SucessModelData<List<DepartmentsViewModel>>(ViewModel));
+                }
             }
             return Ok(new SucessModelData<object>(null));
         }
@@ -265,21 +309,16 @@ namespace Authority.Web.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("UpdateDepartment", Name = "UpdateDepartment")]
-        [Authorize(Policy ="SystemOrAdmin")]
+        [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> UpdateDepartment()
         {
-            var flag = await  _departmentService.UpdateDepartments();
-            if (flag) {
+            var flag = await _departmentService.UpdateDepartments();
+            if (flag)
+            {
                 return Ok(new SucessModel());
             }
             return Ok(new JsonFailCatch("更新失败"));
         }
         #endregion
-
-
-
-
-
-
     }
 }

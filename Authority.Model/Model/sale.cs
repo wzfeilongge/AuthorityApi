@@ -42,12 +42,5 @@ namespace Authority.Model.Model
         /// 商品Id
         /// </summary>
         public int ProductId { get; set; }
-
-   
-
-
-
-
-
     }
 }

@@ -14,6 +14,12 @@
             开发环境的消息
             </summary>
         </member>
+        <member name="M:Authority.Web.Api.AOP.Filter.TranAOP.Intercept(Castle.DynamicProxy.IInvocation)">
+            <summary>
+            实例化IInterceptor唯一方法
+            </summary>
+            <param name="invocation"></param>
+        </member>
         <member name="P:Authority.Web.Api.ControllerModel.ChangeDepartmentModel.UserName">
             <summary>
             用户名
@@ -157,9 +163,14 @@
             <summary>
             查询销售记录
             </summary>
-            <param name="Rule">查询的规则</param>
-            <param name="Count">页码大小</param>
-            <param name="Page">页码</param>
+            <param name="saleQuery"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Authority.Web.Api.Controllers.ERPController.AddSale(Authority.Model.Model.Sale)">
+            <summary>
+            销售商品
+            </summary>
+            <param name="sale"></param>
             <returns></returns>
         </member>
         <member name="M:Authority.Web.Api.Controllers.ERPController.QueryProduct">

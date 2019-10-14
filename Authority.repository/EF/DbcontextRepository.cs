@@ -1,4 +1,6 @@
-﻿using Authority.Model.Model;
+﻿using Authority.Model.BankModel;
+using Authority.Model.Model;
+using Authority.Model.Model.BankModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -58,6 +60,10 @@ namespace Authority.repository.EF
         public DbSet<Sale> Sale { get; set; }
 
         public DbSet<Product> Product { get; set; }
+
+        public DbSet<BusinessMan> BusinessMan { get; set; }
+
+        public DbSet<CounterCuteGirl> CounterCuteGirl { get; set; }
 
 
     }

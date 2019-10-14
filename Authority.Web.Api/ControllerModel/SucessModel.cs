@@ -11,6 +11,15 @@ namespace Authority.Web.Api.ControllerModel
         public int Code { get; set; } = 200;
 
         public string Msg { get; set; } = "操作成功";
+        public SucessModel()
+        {
+
+        }
+        public SucessModel(string Msg)
+        {
+            
+            this.Msg = Msg;
+        }
     }
 
 

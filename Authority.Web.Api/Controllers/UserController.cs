@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Authoritiy.IServices;
 using Authority.Applicaion.ViewModel;
 using Authority.Business.Business;
+using Authority.Common.Helper;
+using Authority.Common.HttpHelper;
 using Authority.Model.Model;
 using Authority.Web.Api.ControllerModel;
 using Authority.Web.Api.JwtHelper;
@@ -28,12 +30,15 @@ namespace Authority.Web.Api.Controllers
 
         private readonly IAuthorityBusinessInterface _authorityBusinessInterface;
 
+       // private readonly IUnitOfWork _unitOfWork;
+
         public UserController(IUserServices userServices, ILogger<UserController> Apiloger, IJwtInterface IJwtInterface, IAuthorityBusinessInterface authorityBusinessInterface)
         {
             _userServices = userServices;
             _Apiloger = Apiloger;
             _IJwtInterface = IJwtInterface;
             _authorityBusinessInterface = authorityBusinessInterface;
+           // _unitOfWork = unitOfWork;
         }
 
         #endregion
@@ -46,29 +51,32 @@ namespace Authority.Web.Api.Controllers
         [HttpGet("Login", Name = ("Login"))]
         public async Task<IActionResult> Login([FromBody] LoginModel request)
         {
-            var result = await _userServices.Login(request.UserName, request.PassWord);
-            if (result != null)
+            if (ModelState.IsValid)
             {
-                TokenModelJwt t = new TokenModelJwt
+                var result = await _userServices.Login(request.UserName, request.PassWord);
+                if (result != null)
                 {
-                    Role = result.Role,
-                    Uid = result.Id,
-                    Name = result.UserName
-                };
-                string token = _IJwtInterface.IssueJwt(t);
-                if (token != null)
-                {
-                    result.Token = token;
-                    result.PassWord = "******";
-                    result.AdminPassword = "******";
+                    TokenModelJwt t = new TokenModelJwt
+                    {
+                        Role = result.Role,
+                        Uid = result.Id,
+                        Name = result.UserName
+                    };
+                    string token = _IJwtInterface.IssueJwt(t);
+                    if (token != null)
+                    {
+                        result.Token = token;
+                        result.PassWord = "******";
+                        result.AdminPassword = "******";
+                    }
+                    var model = _authorityBusinessInterface.GetDtoModel(result);
+                    return Ok(new SucessModelData<UserViewModel>(model));
                 }
-                var model = _authorityBusinessInterface.GetDtoModel(result);
-                return Ok(new SucessModelData<UserViewModel>(model));
             }
             return Ok(new JsonFailCatch("登录失败"));
         }
 
- 
+
 
         /// <summary>
         /// 修改自己的状态
@@ -77,39 +85,78 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPut("ChangeStateForUp", Name = ("ChangeStateForUp"))]
         [Authorize(Policy = ("All"))]
+        [UseTran]
         public async Task<IActionResult> ChangeStateForUp([FromBody] User User)
         {
-            if (User != null)
+            if (ModelState.IsValid)
             {
-                var result = await _userServices.ChangeUserState(User);
-                if (result)
+                try
                 {
-                    return Ok(new SucessModel());
+                    //_unitOfWork.BeginTran();
+                    var result = await _userServices.ChangeUserState(User);
+                   // _unitOfWork.Commit();
+                    if (result)
+                    {
+                        return Ok(new SucessModel());
+                    }
+                }
+                catch (Exception)
+                {
+                  //  _unitOfWork.Rollback();
+                    var model = await _userServices.GetModelAsync(u => u == User);
+                    if (model == null)
+                    {
+                        return Ok(new JsonFailCatch("出现异常，回滚成功"));
+                    }
+                    else
+                    {
+                        return Ok(new SucessModel());
+                    }
                 }
             }
             return Ok(new JsonFailCatch("修改用户失败"));
         }
 
-      /// <summary>
-      /// 修改自己的密码
-      /// </summary>
-      /// <param name="Model"></param>
-      /// <returns></returns>
+        /// <summary>
+        /// 修改自己的密码
+        /// </summary>
+        /// <param name="Model"></param>
+        /// <returns></returns>
         [HttpPut("ChangePassWord", Name = ("ChangePassWord"))]
         [Authorize(Policy = ("All"))]
+        [UseTran]
         public async Task<IActionResult> ChangePassWord([FromBody] ChangePassWordModel Model)
         {
-            if (Model != null)
+            if (ModelState.IsValid)
             {
-                var result = await _userServices.ChangePassword(Model.UserName,Model.OldPassword,Model.NewPassWord);
-                if (result)
+                try
                 {
-                    return Ok(new SucessModel());
+                 //   _unitOfWork.BeginTran();
+                    var result = await _userServices.ChangePassword(Model.UserName, Model.OldPassword, Model.NewPassWord);
+                 //   _unitOfWork.Commit();
+                    if (result)
+                    {
+                        return Ok(new SucessModel());
+                    }
+                }
+                catch (Exception)
+                {
+                    //_unitOfWork.Rollback();
+                    Model.NewPassWord = FacePayEncrypt.Encrypt(Model.NewPassWord);
+                    var model = await _userServices.GetModelAsync(u => u.UserName == Model.UserName && u.PassWord == Model.NewPassWord);
+                    if (model != null)
+                    {
+                        return Ok(new SucessModel());
+                    }
+                    else
+                    {
+                        return Ok(new JsonFailCatch("出现异常，修改用户密码失败"));
+                    }
                 }
             }
             return Ok(new JsonFailCatch("修改用户失败"));
         }
 
-  
+
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Authority.Applicaion.ViewModel;
+using Authority.Model.BankModel;
 using Authority.Model.Model;
+using Authority.Model.Model.BankModel;
 using AutoMapper;
 
 namespace Authority.Business.Business
@@ -34,6 +36,21 @@ namespace Authority.Business.Business
         public List<DepartmentsViewModel> GetDtoModelDepartment(List<Departments> departments)
         {
             return _mapper.Map<List<Departments>, List<DepartmentsViewModel>>(departments);
+        }
+
+        public CreateViewModel GetCreateDto(BusinessMan BusinessMan)
+        {
+            return _mapper.Map<BusinessMan,CreateViewModel>(BusinessMan);
+        }
+
+        public List<CreateViewModel> GetCreateDtoList(List<BusinessMan> BusinessManList)
+        {
+            return _mapper.Map<List<BusinessMan>,List<CreateViewModel>>(BusinessManList);
+        }
+
+        public CounterCuteGirl GetViewModelChangeCounterCuteGirl(CallNumberViewModel viewModel)
+        {
+            return _mapper.Map<CallNumberViewModel,CounterCuteGirl>(viewModel);
         }
     }
 }

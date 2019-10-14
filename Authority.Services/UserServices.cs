@@ -2,7 +2,6 @@
 using Authority.Common.Helper;
 using Authority.IRepository;
 using Authority.Model.Model;
-using Authority.repository;
 using Authority.Services.BaseService;
 using Microsoft.Extensions.Logging;
 using System;

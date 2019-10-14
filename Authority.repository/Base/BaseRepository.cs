@@ -1,4 +1,5 @@
 ﻿using Authority.IRepository.Base;
+using Authority.IRepository.IUnitOfWord;
 using Authority.repository.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -16,13 +17,13 @@ namespace Authority.repository.Base
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class, new()
     {
-
-        public DbcontextRepository Context;
+        
+        public DbcontextRepository Context;     
         internal DbSet<TEntity> Dbset { get; set; }
 
         private readonly ILogger<IBaseRepository<TEntity>> _myLogger;
         public BaseRepository(ILogger<IBaseRepository<TEntity>> myLogger)
-        {
+        {          
             Context = DbcontextRepository.Context;
             Dbset = Context.Set<TEntity>();
             _myLogger = myLogger;
@@ -44,6 +45,7 @@ namespace Authority.repository.Base
             {
                 sqlrealType = "Mysql";
             }
+           
             _myLogger.LogInformation($"数据库类型是{sqlrealType}");
         }
 

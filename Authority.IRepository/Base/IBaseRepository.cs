@@ -26,7 +26,5 @@ namespace Authority.IRepository.Base
 
         Task<int> Modify(T model, params string[] propertyNames);
 
-
-
     }
 }
