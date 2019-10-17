@@ -73,5 +73,12 @@ namespace Authoritiy.IServices
         /// <param name="User"></param>
         /// <returns></returns>
         Task<bool> Modfiy(User User);
+
+
+        /// <summary>
+        /// 测试
+        /// </summary>
+        /// <returns></returns>
+        Task Test();
     }
 }

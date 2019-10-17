@@ -85,7 +85,7 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPut("ChangeStateForUp", Name = ("ChangeStateForUp"))]
         [Authorize(Policy = ("All"))]
-        [UseTran]
+        
         public async Task<IActionResult> ChangeStateForUp([FromBody] User User)
         {
             if (ModelState.IsValid)
@@ -124,7 +124,7 @@ namespace Authority.Web.Api.Controllers
         /// <returns></returns>
         [HttpPut("ChangePassWord", Name = ("ChangePassWord"))]
         [Authorize(Policy = ("All"))]
-        [UseTran]
+       
         public async Task<IActionResult> ChangePassWord([FromBody] ChangePassWordModel Model)
         {
             if (ModelState.IsValid)
@@ -157,6 +157,15 @@ namespace Authority.Web.Api.Controllers
             return Ok(new JsonFailCatch("修改用户失败"));
         }
 
+       
+        [HttpGet("Test",Name ="Test")]
+        
+        public async Task<IActionResult> Test() {
+            await _userServices.Test();
+            return Ok(new SucessModel());
+        
+        
+        }
 
     }
 }

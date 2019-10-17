@@ -20,6 +20,7 @@ namespace Authority.Services
         {
             _saleRepository = saleRepository;
             _productRepository = productRepository;
+            BaseDal = saleRepository;
 
         }
 

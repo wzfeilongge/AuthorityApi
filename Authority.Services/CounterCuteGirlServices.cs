@@ -20,6 +20,7 @@ namespace Authority.Services
         {
             _counterCuteGirlRepository = counterCuteGirlRepository;
             _BusinessManRepository = BusinessManRepository;
+            BaseDal = counterCuteGirlRepository;
         }
         public  async Task<bool> CallNumber(CounterCuteGirl counterCuteGirl, int TakeId)
         {

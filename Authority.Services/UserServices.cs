@@ -1,5 +1,6 @@
 ﻿using Authoritiy.IServices;
 using Authority.Common.Helper;
+using Authority.Common.HttpHelper;
 using Authority.IRepository;
 using Authority.Model.Model;
 using Authority.Services.BaseService;
@@ -21,8 +22,10 @@ namespace Authority.Services
 
         public UserServices(IUserRepository IUserRepository, ILogger<UserServices> myLogger)
         {
+            base.BaseDal = IUserRepository;
             _userServices = IUserRepository;
             _myLogger = myLogger;
+          
         }
         #endregion
 
@@ -177,7 +180,10 @@ namespace Authority.Services
             return list;
         }
 
-
-
+        
+        public Task Test()
+        {
+            return Task.FromResult(1+1);
+        }
     }
 }

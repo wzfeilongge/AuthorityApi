@@ -17,20 +17,19 @@ namespace Authority.repository.Base
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class, new()
     {
-        
-        public DbcontextRepository Context;     
+
+        public DbcontextRepository Context;
         internal DbSet<TEntity> Dbset { get; set; }
 
         private readonly ILogger<IBaseRepository<TEntity>> _myLogger;
         public BaseRepository(ILogger<IBaseRepository<TEntity>> myLogger)
-        {          
+        {
             Context = DbcontextRepository.Context;
             Dbset = Context.Set<TEntity>();
             _myLogger = myLogger;
             var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           .Build();
+           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
             var sqlType = config["Sql:sqlType"];
             var sqlrealType = "";
             if (sqlType == "1")
@@ -45,7 +44,7 @@ namespace Authority.repository.Base
             {
                 sqlrealType = "Mysql";
             }
-           
+
             _myLogger.LogInformation($"数据库类型是{sqlrealType}");
         }
 

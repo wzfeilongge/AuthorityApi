@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Authority.Applicaion\Authority.Applicaion.csproj" />
     <ProjectReference Include="..\Authority.Model\Authority.Model.csproj" />
   </ItemGroup>
 

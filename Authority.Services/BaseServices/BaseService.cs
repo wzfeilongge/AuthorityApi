@@ -13,6 +13,9 @@ namespace Authority.Services.BaseService
 
         public IBaseRepository<TEntity> BaseDal;
 
+
+      
+
         /// <summary>
         /// 新增一个数据库模型
         /// </summary>
@@ -76,6 +79,13 @@ namespace Authority.Services.BaseService
         public async Task<List<TEntity>> Query(Expression<Func<TEntity, bool>> whereLambda)
         {
             return await BaseDal.Query(whereLambda);
+        }
+
+
+        public async Task<int> Modfiy(TEntity Entity) {
+
+            return await BaseDal.Modify(Entity);
+        
         }
     }
 }

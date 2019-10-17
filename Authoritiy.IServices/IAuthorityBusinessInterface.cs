@@ -23,7 +23,6 @@ namespace Authority.Business.Business
 
         List<CreateViewModel> GetCreateDtoList(List<BusinessMan> BusinessManList);
 
-
         CounterCuteGirl GetViewModelChangeCounterCuteGirl(CallNumberViewModel viewModel);
 
 

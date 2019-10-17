@@ -32,7 +32,7 @@ namespace Authority.Web.Api.AOP.Filter
             {
                 try
                 {
-                    Console.WriteLine($"Redis strat");
+                    Console.WriteLine($"UnintOfWord strat");
                     //_unitOfWork.BeginTran();
                     invocation.Proceed();
                     // 异步获取异常，普通的 try catch 外层不能达到目的，毕竟是异步的
@@ -84,6 +84,7 @@ namespace Authority.Web.Api.AOP.Filter
 
         private async Task TestActionAsync(IInvocation invocation)
         {
+           
         }
 
      

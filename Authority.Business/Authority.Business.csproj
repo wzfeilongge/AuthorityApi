@@ -9,4 +9,8 @@
     <ProjectReference Include="..\Authority.Applicaion\Authority.Applicaion.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Business\" />
+  </ItemGroup>
+
 </Project>

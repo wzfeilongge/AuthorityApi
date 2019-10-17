@@ -97,10 +97,8 @@ namespace Authority.Web.Api.Controllers
                     var model = await _departmentService.QueryDepartment(User.Department);
                     if (model != null)
                     {
-                        model.Count--;
-                        //       _unitOfWork.Commit();
-                        await _departmentService.Modfiy(model);
-                        //       _unitOfWork.Commit();
+                        model.Count--;                       
+                        await _departmentService.Modfiy(model);                      
                         _Apiloger.LogInformation($"成功删除一个员工{nameof(User.UserName)}");
                         return Ok(new SucessModel());
                     }

@@ -18,6 +18,7 @@ namespace Authority.Services
         {
             _productRepository = productRepository;
             _myLogger = myLogger;
+            BaseDal = productRepository;
         }
         /// <summary>
         /// 新增商品

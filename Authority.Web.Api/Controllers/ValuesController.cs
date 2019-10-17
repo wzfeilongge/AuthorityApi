@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Authority.Common.HttpHelper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authority.Web.Api.Controllers
@@ -18,6 +19,7 @@ namespace Authority.Web.Api.Controllers
         }
 
         // GET api/values/5
+        [UseTran]
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {

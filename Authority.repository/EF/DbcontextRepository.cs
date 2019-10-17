@@ -26,7 +26,6 @@ namespace Authority.repository.EF
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            //this.Database.EnsureCreated();
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -48,23 +47,13 @@ namespace Authority.repository.EF
                 optionsBuilder.UseMySQL(sqlstr);
                 return;
             }
-
-
         }
 
         public DbSet<User> User { get; set; }
-
-
         public DbSet<Departments> Departments { get; set; }
-
         public DbSet<Sale> Sale { get; set; }
-
         public DbSet<Product> Product { get; set; }
-
         public DbSet<BusinessMan> BusinessMan { get; set; }
-
         public DbSet<CounterCuteGirl> CounterCuteGirl { get; set; }
-
-
     }
 }

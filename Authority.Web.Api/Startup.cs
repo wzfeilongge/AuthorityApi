@@ -62,8 +62,12 @@ namespace Authority.Web.Api
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
+          
+
+
             #region  配置跨域
-            services.AddCors(c=> {
+            services.AddCors(c =>
+            {
 
                 c.AddPolicy("LimitRequests", policy =>
                 {
@@ -71,8 +75,9 @@ namespace Authority.Web.Api
                     // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
                     policy
                     .WithOrigins("http://127.0.0.1:1818", "http://localhost:8080", "http://localhost:8021"
-                    ,"http://localhost:8081", "http://localhost:1818"
-                    ,"http://localhost:9001" ,"http://localhost:1090"
+                    , "http://localhost:8081", "http://localhost:1818"
+                    , "http://localhost:9001", "http://localhost:1090"
+                    ,"http://localhost:5000","http://localhost:5001"
                     )
                     .AllowAnyHeader()//Ensures that the policy allows any header.
                     .AllowAnyMethod();
@@ -82,10 +87,15 @@ namespace Authority.Web.Api
             });
 
 
-                #endregion
+            #endregion
+
+            services.AddAutoMapper(typeof(Startup));
+
+          
+
 
             #region 注入Redis
-                services.AddSingleton<IRedisCacheManager, RedisCacheManager>();//这里说下，如果是自己的项目，个人更建议使用单例模式 
+            services.AddSingleton<IRedisCacheManager, RedisCacheManager>();//这里说下，如果是自己的项目，个人更建议使用单例模式 
             #endregion
 
             #region 注入Swagger
@@ -108,6 +118,8 @@ namespace Authority.Web.Api
 
             #region 注入Token           
             services.AddSingleton<IJwtInterface, JwtHelpers>(); //注入jwt
+
+            
 
             services.AddAuthorization(options =>
             {
@@ -140,23 +152,34 @@ namespace Authority.Web.Api
             });
             #endregion
 
+            
+
             #region 使用 AutoFac 第三方IOC接管 core内置DI容器 实现解耦
             var builder = new ContainerBuilder();
             builder.RegisterType<LogHelper>().As<ILoggerHelper>(); //日志过滤器(全局异常日志过滤)
+
+            #region 容器 Aop
             builder.RegisterType<TranAOP>();                       //日志AOP拦截器
             builder.RegisterType<AuthorityRedisAOP>();             //RedisAop拦截器
+            #endregion 
+
             builder.RegisterType<BankBusiness>().As<IBankHandle>();//自己随便写着玩的
-            builder.RegisterType<AutoMapperDto>(); //AutoMapper Dto
-            builder.RegisterType<AuthorityBusinessHandle>().As<IAuthorityBusinessInterface>();//Dto 转换 由AutoMapper 实现
+            builder.RegisterType<AutoMapperDto>();
             var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;//获取项目路径
-            var RepositoryDllFile = Path.Combine(basePath, "Authority.Repository.dll");//获取注入项目绝对路径           
-            var assemblysRepositorys = Assembly.LoadFile(RepositoryDllFile);//直接采用加载文件的方法
+
             var SerivcesDllFile = Path.Combine(basePath, "Authority.Services.dll");//获取注入项目绝对路径         
-            var assemblysServices = Assembly.LoadFile(SerivcesDllFile);//直接采用加载文件的方法
+            var assemblysServices = Assembly.LoadFrom(SerivcesDllFile);//直接采用加载文件的方法
+            //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP      ;//注入repository
             builder.RegisterAssemblyTypes(assemblysServices).AsImplementedInterfaces()
                 .InstancePerLifetimeScope()
                 .EnableInterfaceInterceptors()
-                .InterceptedBy(typeof(TranAOP), typeof(AuthorityRedisAOP)); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP          
+                .InterceptedBy(typeof(TranAOP), typeof(AuthorityRedisAOP)); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP  
+
+            var RepositoryDllFile = Path.Combine(basePath, "Authority.Repository.dll");//获取注入项目绝对路径           
+            var assemblysRepositorys = Assembly.LoadFrom(RepositoryDllFile);//直接采用加载文件的方法
+            builder.RegisterAssemblyTypes(assemblysRepositorys).AsImplementedInterfaces(); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP  
+
+
             builder.Populate(services);
             var AppBuilder = builder.Build();
             return new AutofacServiceProvider(AppBuilder); //第三方IOC接管 core内置DI容器

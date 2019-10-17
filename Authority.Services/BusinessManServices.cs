@@ -15,6 +15,7 @@ namespace Authority.Services
         public BusinessManServices(IBusinessManRepository BusinessRepository)
         {
             _BusinessRepository = BusinessRepository;
+            BaseDal = _BusinessRepository;
         }
 
         public    async Task<BusinessMan> Create(int TaskType)

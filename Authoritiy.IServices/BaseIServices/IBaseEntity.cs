@@ -20,5 +20,7 @@ namespace Authoritiy.IServices.BaseServices
 
         Task<int> DelBy(Expression<Func<T, bool>> delWhere);
 
+        Task<int> Modfiy(T Entity);
+
     }
 }

@@ -26,6 +26,7 @@ namespace Authority.Services
             _myLogger = myLogger;
             _DepartmentRepository = DepartmentRepository;
             _UserRepository = UserRepository;
+            BaseDal = DepartmentRepository;
         }
 
         #endregion
