@@ -16,8 +16,6 @@ namespace Authoritiy.IServices
 
         Task<Product> EditProduct(Product product); //编辑商品 
 
-        Task<bool> Modfiy(Product product); //保存
-
         Task<List<Product>> QueryProductList(); //查询所有的商品
 
         Task<List<Product>> QueryListInforName(string ProductName);//根据商品名称查询

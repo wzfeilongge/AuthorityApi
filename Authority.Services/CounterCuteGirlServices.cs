@@ -59,7 +59,6 @@ namespace Authority.Services
                     return true;
                 }
             }
-
             return false;
         }
     }

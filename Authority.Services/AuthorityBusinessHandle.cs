@@ -24,7 +24,6 @@ namespace Authority.Business.Business
 
         public List<UserViewModel> GetDtoModels(List<User> user)
         {
-
             return _mapper.Map<List<User>, List<UserViewModel>>(user);
         }
 

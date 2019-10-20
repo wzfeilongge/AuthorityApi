@@ -1,4 +1,5 @@
 ﻿using Authoritiy.IServices;
+using Authority.Common.HttpHelper;
 using Authority.IRepository;
 using Authority.Model.Model;
 using Authority.Services.BaseService;
@@ -20,6 +21,8 @@ namespace Authority.Services
             _myLogger = myLogger;
             BaseDal = productRepository;
         }
+
+        [UseTran]
         /// <summary>
         /// 新增商品
         /// </summary>
@@ -36,6 +39,7 @@ namespace Authority.Services
             return false;
         }
 
+        [UseTran]
         /// <summary>
         /// 删除Model
         /// </summary>
@@ -53,6 +57,7 @@ namespace Authority.Services
             return false;
         }
 
+        [UseTran]
         /// <summary>
         /// 编辑商品
         /// </summary>
@@ -73,20 +78,7 @@ namespace Authority.Services
             return null;
         }
 
-        /// <summary>
-        /// 保存
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        public async Task<bool> Modfiy(Product product)
-        {
-            int istrue = await _productRepository.Modify(product);
-            if (istrue > 0)
-            {
-                return true;
-            }
-            return false;
-        }
+
 
         /// <summary>
         /// 商品名称查询商品

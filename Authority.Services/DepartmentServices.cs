@@ -1,4 +1,5 @@
 ﻿using Authoritiy.IServices;
+using Authority.Common.HttpHelper;
 using Authority.IRepository;
 using Authority.Model.Model;
 using Authority.Services.BaseService;
@@ -31,6 +32,7 @@ namespace Authority.Services
 
         #endregion
 
+        [UseTran]
         /// <summary>
         /// 加入一个部门
         /// </summary>
@@ -42,7 +44,7 @@ namespace Authority.Services
             _myLogger.LogInformation($"成功加入{departments.DepartmentName}部门-------{DateTime.Now.ToString()}");
             return await AddModel;
         }
-
+        [UseTran]
         /// <summary>
         /// 删除一个部门
         /// </summary>
@@ -55,6 +57,7 @@ namespace Authority.Services
             return await DelModel;
         }
 
+        [UseTran]
         /// <summary>
         /// 编辑一个部门
         /// </summary>
@@ -71,21 +74,6 @@ namespace Authority.Services
                 return EditModel;
             }
             return null;
-        }
-
-        /// <summary>
-        /// 修改实体
-        /// </summary>
-        /// <param name="departments"></param>
-        /// <returns></returns>
-        public async Task<bool> Modfiy(Departments departments)
-        {
-            int istrue = await _DepartmentRepository.Modify(departments);
-            if (istrue > 0)
-            {
-                return true;
-            }
-            return false;
         }
 
         /// <summary>
@@ -120,6 +108,7 @@ namespace Authority.Services
             return null;
         }
 
+        [UseTran]
         /// <summary>
         /// 更新department数据库中的数据 速度较慢
         /// </summary>

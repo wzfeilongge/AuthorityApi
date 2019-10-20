@@ -16,7 +16,7 @@ namespace Authority.Web.Api.AOP
         }
         public void Intercept(IInvocation invocation)
         {
-            var dataIntercept = $"{DateTime.Now.ToString("yyyyMMddHHmmss")} " +
+            var dataIntercept = $"{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")} " +
                 $"当前执行方法：{ invocation.Method.Name} " +
                 $"参数是： {string.Join(", ", invocation.Arguments.Select(a => (a ?? "").ToString()).ToArray())} \r\n";
 
@@ -32,7 +32,7 @@ namespace Authority.Web.Api.AOP
                 Directory.CreateDirectory(path);
             }
 
-            string fileName = path + $@"\InterceptLog-{DateTime.Now.ToString("yyyyMMddHHmmss")}.log";
+            string fileName = path + $@"\InterceptLog-{DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")}.log";
 
             StreamWriter sw = File.AppendText(fileName);
             sw.WriteLine(dataIntercept);

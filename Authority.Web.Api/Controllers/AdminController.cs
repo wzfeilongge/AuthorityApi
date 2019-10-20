@@ -175,16 +175,13 @@ namespace Authority.Web.Api.Controllers
 
                 if (model != null)
                 {
-                    //   _unitOfWork.BeginTran();
                     model.Department = ChangeModel.NewDepartment;
                     var istruenew = await _userServices.Modfiy(model);
-                    //_unitOfWork.Commit();
-                    if (istruenew)
+                    if (istruenew>0)
                     {
                         return Ok(new SucessModel());
                     }
                 }
-
             }
             return Ok(new JsonFailCatch("编辑失败"));
         }

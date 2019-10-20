@@ -81,7 +81,11 @@ namespace Authority.Services.BaseService
             return await BaseDal.Query(whereLambda);
         }
 
-
+        /// <summary>
+        /// 修改实体
+        /// </summary>
+        /// <param name="Entity"></param>
+        /// <returns></returns>
         public async Task<int> Modfiy(TEntity Entity) {
 
             return await BaseDal.Modify(Entity);

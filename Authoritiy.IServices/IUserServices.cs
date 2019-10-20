@@ -68,14 +68,6 @@ namespace Authoritiy.IServices
         Task<List<User>> QueryListInforDepartment(string DepartmentName);
 
         /// <summary>
-        /// 保存
-        /// </summary>
-        /// <param name="User"></param>
-        /// <returns></returns>
-        Task<bool> Modfiy(User User);
-
-
-        /// <summary>
         /// 测试
         /// </summary>
         /// <returns></returns>

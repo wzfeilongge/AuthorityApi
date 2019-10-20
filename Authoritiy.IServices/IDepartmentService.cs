@@ -18,9 +18,7 @@ namespace Authoritiy.IServices
         Task<List<Departments>> QueryList();
 
         Task<Departments> QueryDepartment(string DepartmentName);
-
-        Task<bool> Modfiy(Departments departments);
-
+      
         Task<bool> UpdateDepartments();
 
     }

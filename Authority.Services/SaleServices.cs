@@ -1,4 +1,5 @@
 ﻿using Authoritiy.IServices;
+using Authority.Common.HttpHelper;
 using Authority.IRepository;
 using Authority.Model.Model;
 using Authority.Services.BaseService;
@@ -25,6 +26,7 @@ namespace Authority.Services
         }
 
 
+        [UseTran]
         /// <summary>
         /// 增加一个销售的记录表
         /// </summary>

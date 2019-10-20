@@ -62,9 +62,6 @@ namespace Authority.Web.Api
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
-          
-
-
             #region  配置跨域
             services.AddCors(c =>
             {
@@ -89,10 +86,9 @@ namespace Authority.Web.Api
 
             #endregion
 
+            #region AutoMapper
             services.AddAutoMapper(typeof(Startup));
-
-          
-
+            #endregion
 
             #region 注入Redis
             services.AddSingleton<IRedisCacheManager, RedisCacheManager>();//这里说下，如果是自己的项目，个人更建议使用单例模式 
@@ -152,43 +148,42 @@ namespace Authority.Web.Api
             });
             #endregion
 
-            
-
             #region 使用 AutoFac 第三方IOC接管 core内置DI容器 实现解耦
             var builder = new ContainerBuilder();
             builder.RegisterType<LogHelper>().As<ILoggerHelper>(); //日志过滤器(全局异常日志过滤)
 
             #region 容器 Aop
+            builder.RegisterType<AuthorityLogAOP>();
             builder.RegisterType<TranAOP>();                       //日志AOP拦截器
             builder.RegisterType<AuthorityRedisAOP>();             //RedisAop拦截器
             #endregion 
 
             builder.RegisterType<BankBusiness>().As<IBankHandle>();//自己随便写着玩的
+           // builder.RegisterType<JwtHelpers>().As<IJwtInterface>();
             builder.RegisterType<AutoMapperDto>();
             var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;//获取项目路径
 
+            #region 解耦
             var SerivcesDllFile = Path.Combine(basePath, "Authority.Services.dll");//获取注入项目绝对路径         
             var assemblysServices = Assembly.LoadFrom(SerivcesDllFile);//直接采用加载文件的方法
             //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP      ;//注入repository
             builder.RegisterAssemblyTypes(assemblysServices).AsImplementedInterfaces()
                 .InstancePerLifetimeScope()
                 .EnableInterfaceInterceptors()
-                .InterceptedBy(typeof(TranAOP), typeof(AuthorityRedisAOP)); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP  
-
+                .InterceptedBy(typeof(TranAOP), typeof(AuthorityRedisAOP),typeof(AuthorityLogAOP)); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP  
             var RepositoryDllFile = Path.Combine(basePath, "Authority.Repository.dll");//获取注入项目绝对路径           
             var assemblysRepositorys = Assembly.LoadFrom(RepositoryDllFile);//直接采用加载文件的方法
             builder.RegisterAssemblyTypes(assemblysRepositorys).AsImplementedInterfaces(); //指定已扫描程序集中的类型注册为提供所有其实现的接口 实现AOP  
+            #endregion
 
-
-            builder.Populate(services);
+            builder.Populate(services); //services 加入容器
             var AppBuilder = builder.Build();
             return new AutofacServiceProvider(AppBuilder); //第三方IOC接管 core内置DI容器
-
             #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public static void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             #region Contrllers Log
             app.UseStaticFiles();

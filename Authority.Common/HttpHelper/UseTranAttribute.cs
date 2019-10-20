@@ -5,7 +5,7 @@ using System.Text;
 namespace Authority.Common.HttpHelper
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
-    public class UseTranAttribute:Attribute
+    public sealed class UseTranAttribute:Attribute
     {
 
     }

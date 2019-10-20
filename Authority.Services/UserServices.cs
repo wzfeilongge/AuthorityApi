@@ -29,6 +29,8 @@ namespace Authority.Services
         }
         #endregion
 
+
+        [UseTran]
         /// <summary>
         /// 加入一名员工
         /// </summary>
@@ -46,6 +48,7 @@ namespace Authority.Services
             return null;
         }
 
+        [UseTran]
         /// <summary>
         /// 用户修改自己的密码
         /// </summary>
@@ -70,6 +73,7 @@ namespace Authority.Services
             return false;
         }
 
+        [UseTran]
         /// <summary>
         /// 修改状态
         /// </summary>
@@ -92,6 +96,7 @@ namespace Authority.Services
             return false;
         }
 
+        [UseTran]
         /// <summary>
         /// 删除一名员工
         /// </summary>
@@ -127,20 +132,7 @@ namespace Authority.Services
             return null;
         }
 
-        /// <summary>
-        /// 保存修改的Model
-        /// </summary>
-        /// <param name="User"></param>
-        /// <returns></returns>
-        public async Task<bool> Modfiy(User User)
-        {
-            int istrue = await _userServices.Modify(User);
-            if (istrue > 0)
-            {
-                return true;
-            }
-            return false;
-        }
+
 
         /// <summary>
         /// 查询所有员工

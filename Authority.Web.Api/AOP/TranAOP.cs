@@ -84,10 +84,8 @@ namespace Authority.Web.Api.AOP.Filter
 
         private async Task TestActionAsync(IInvocation invocation)
         {
-           
-        }
 
-     
+        }
 
         internal static class InternalAsyncHelper
         {
