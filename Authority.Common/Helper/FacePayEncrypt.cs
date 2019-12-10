@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Authority.Common.Helper
 {
-    public class FacePayEncrypt
+    public static class FacePayEncrypt
     {
 
         private const string KEY = "DFD313F7-9E4E-464A-B84D-6AD801029C00";

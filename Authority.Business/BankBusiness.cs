@@ -15,7 +15,6 @@ namespace Authority.Business
 
         private readonly ICounterCuteGirlServices _counterCuteGirlServices;
 
-
         public BankBusiness(IBusinessManServices businessManServices, ICounterCuteGirlServices counterCuteGirlServices)
         {
             _businessManServices = businessManServices;
@@ -24,16 +23,16 @@ namespace Authority.Business
 
         public async Task<Queue<BusinessMan>> GetBusinessMan()
         {
-            var model = (await _businessManServices.Query(obj => obj.Istrue == false)).OrderBy(u => u.TakeNumber);          
-            var query = new Queue<BusinessMan>(model);
-            return query;
+            var model = (await _businessManServices.Query(obj => obj.Istrue == false)).OrderBy(u => u.TakeNumber);
+            return  new Queue<BusinessMan>(model);
+
         }
 
         public  async Task<Queue<CounterCuteGirl>> GetGirls()
         {
             var model = (await _counterCuteGirlServices.Query(obj => obj.IsTrue)).OrderBy(u=>u.CounterNumber);
-            var query = new Queue<CounterCuteGirl>(model);
-            return query;
+            return new Queue<CounterCuteGirl>(model);
+           
         }
     }
 }

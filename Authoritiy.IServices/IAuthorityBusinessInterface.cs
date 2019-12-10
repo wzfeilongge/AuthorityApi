@@ -18,15 +18,12 @@ namespace Authority.Business.Business
 
         List<DepartmentsViewModel> GetDtoModelDepartment(List<Departments> departments);
 
-
         CreateViewModel GetCreateDto(BusinessMan BusinessMan);
 
         List<CreateViewModel> GetCreateDtoList(List<BusinessMan> BusinessManList);
 
         CounterCuteGirl GetViewModelChangeCounterCuteGirl(CallNumberViewModel viewModel);
 
-
-
-
+        User RegisterUserModel(UserRegisterModel registerModel);
     }
 }

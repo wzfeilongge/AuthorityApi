@@ -108,26 +108,20 @@ namespace Authority.Services
             return null;
         }
 
-        [UseTran]
+      
         /// <summary>
         /// 更新department数据库中的数据 速度较慢
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> UpdateDepartments()
+        public async Task<int> UpdateDepartments(Departments departments=null)
         {
-            List<string> DepartentName = new List<string>();
-            var UserList = await _UserRepository.Query(u => u.Id > 0);
-            var DepartmentList = await _DepartmentRepository.Query(u => u.Id > 0);
-            if (UserList != null)
-            {
-                foreach (var item in DepartmentList)
-                {
-                    item.Count = UserList.Where(u => u.Department == item.DepartmentName).Count();
-                     await _DepartmentRepository.Modify(item); //循环更新每个部门
-                }              
-                return true;
+            if (departments==null) {
+
+                departments = new Departments();
             }
-            return false;
-        }
+         
+            return  await _DepartmentRepository.UpdateContext(departments);
+        
+        }    
     }
 }

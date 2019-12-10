@@ -2,6 +2,7 @@
 using Authority.IRepository.Base;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,6 @@ namespace Authority.Services.BaseService
     {
 
         public IBaseRepository<TEntity> BaseDal;
-
-
-      
 
         /// <summary>
         /// 新增一个数据库模型
@@ -86,10 +84,24 @@ namespace Authority.Services.BaseService
         /// </summary>
         /// <param name="Entity"></param>
         /// <returns></returns>
-        public async Task<int> Modfiy(TEntity Entity) {
+        public async Task<int> Modfiy(TEntity Entity)
+        {
+            return await BaseDal.Modify(Entity);       
+        }
 
-            return await BaseDal.Modify(Entity);
-        
+        /// <summary>
+        /// 更新Model
+        /// </summary>
+        /// <param name="Model"></param>
+        /// <returns></returns>
+        public async Task<int> UpdateContext(TEntity Model)
+        {
+            return await BaseDal.UpdateContext(Model);
+        }
+
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            return BaseDal.GetAll(whereLambda);
         }
     }
 }

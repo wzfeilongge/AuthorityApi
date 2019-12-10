@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Authoritiy.IServices.BaseServices
 {
-   public interface IBaseEntity<T> where T : class, new()
+    public interface IBaseEntity<T> where T : class, new()
     {
         Task<T> Add(T model);
 
@@ -22,5 +23,8 @@ namespace Authoritiy.IServices.BaseServices
 
         Task<int> Modfiy(T Entity);
 
+        Task<int> UpdateContext(T Model);
+
+        IQueryable<T> GetAll(Expression<Func<T, bool>> whereLambda);
     }
 }

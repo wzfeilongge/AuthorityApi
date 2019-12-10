@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Authority.Applicaion.ViewModel;
 using Authority.Model.BankModel;
 using Authority.Model.Model;
@@ -12,44 +10,49 @@ namespace Authority.Business.Business
     public class AuthorityBusinessHandle : IAuthorityBusinessInterface
     {
 
-        private IMapper _mapper { get; set; }
+        private IMapper Mapper { get; set; }
         public AuthorityBusinessHandle(IMapper mapper)
         {
-            _mapper = mapper;
+            Mapper = mapper;
         }
         public UserViewModel GetDtoModel(User user)
         {
-            return _mapper.Map<User,UserViewModel>(user);
+            return Mapper.Map<User, UserViewModel>(user);
         }
 
         public List<UserViewModel> GetDtoModels(List<User> user)
         {
-            return _mapper.Map<List<User>, List<UserViewModel>>(user);
+            return Mapper.Map<List<User>, List<UserViewModel>>(user);
         }
 
         public DepartmentsViewModel GetDtoModelDepartment(Departments departments)
         {
-            return _mapper.Map<Departments,DepartmentsViewModel>(departments);
+            return Mapper.Map<Departments,DepartmentsViewModel>(departments);
         }
 
         public List<DepartmentsViewModel> GetDtoModelDepartment(List<Departments> departments)
         {
-            return _mapper.Map<List<Departments>, List<DepartmentsViewModel>>(departments);
+            return Mapper.Map<List<Departments>, List<DepartmentsViewModel>>(departments);
         }
 
         public CreateViewModel GetCreateDto(BusinessMan BusinessMan)
         {
-            return _mapper.Map<BusinessMan,CreateViewModel>(BusinessMan);
+            return Mapper.Map<BusinessMan,CreateViewModel>(BusinessMan);
         }
 
         public List<CreateViewModel> GetCreateDtoList(List<BusinessMan> BusinessManList)
         {
-            return _mapper.Map<List<BusinessMan>,List<CreateViewModel>>(BusinessManList);
+            return Mapper.Map<List<BusinessMan>,List<CreateViewModel>>(BusinessManList);
         }
 
         public CounterCuteGirl GetViewModelChangeCounterCuteGirl(CallNumberViewModel viewModel)
         {
-            return _mapper.Map<CallNumberViewModel,CounterCuteGirl>(viewModel);
+            return Mapper.Map<CallNumberViewModel,CounterCuteGirl>(viewModel);
+        }
+
+        public User RegisterUserModel(UserRegisterModel registerModel)
+        {
+            return Mapper.Map<UserRegisterModel,User>(registerModel);
         }
     }
 }

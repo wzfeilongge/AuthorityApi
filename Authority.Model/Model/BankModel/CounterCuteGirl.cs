@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Authority.Model.Model.BankModel
@@ -11,12 +12,13 @@ namespace Authority.Model.Model.BankModel
         /// 员工唯一Id
         /// </summary>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         /// <summary>
         /// 员工姓名
         /// </summary>      
-        public string  Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 员工号
@@ -31,7 +33,7 @@ namespace Authority.Model.Model.BankModel
         /// <summary>
         /// 柜台号
         /// </summary>
-        public int CounterNumber{ get; set; }
+        public int CounterNumber { get; set; }
 
     }
 }

@@ -14,6 +14,14 @@
             开发环境的消息
             </summary>
         </member>
+        <member name="M:Authority.Web.Api.AOP.Filter.GlobalRouteAuthorizeConvention.Apply(Microsoft.AspNetCore.Mvc.ApplicationModels.ApplicationModel)">
+            <summary>
+            Summary:全局路由权限公约
+            Remarks:目的是针对不同的路由，采用不同的授权过滤器
+            如果 controller 上不加 [Authorize] 特性，默认都是 Permission 策略
+            否则，如果想特例其他授权机制的话，需要在 controller 上带上  [Authorize]，然后再action上自定义授权即可，比如 [Authorize(Roles = "Admin")]
+            </summary>
+        </member>
         <member name="M:Authority.Web.Api.AOP.Filter.TranAOP.Intercept(Castle.DynamicProxy.IInvocation)">
             <summary>
             实例化IInterceptor唯一方法
@@ -253,6 +261,31 @@
         <member name="P:Authority.Web.Api.JwtHelper.TokenModelJwt.Name">
             <summary>
             用户名称
+            </summary>
+        </member>
+        <member name="T:Authority.Web.Api.PolicyRequirement.PolicyRole.UserPermission">
+            <summary>
+            用户权限承载实体
+            </summary>
+        </member>
+        <member name="P:Authority.Web.Api.PolicyRequirement.PolicyRole.UserPermission.Policy">
+            <summary>
+            Policy权限
+            </summary>
+        </member>
+        <member name="P:Authority.Web.Api.PolicyRequirement.PolicyRole.UserPermissions">
+            <summary>
+            用户权限集合
+            </summary>
+        </member>
+        <member name="P:Authority.Web.Api.PolicyRequirement.PolicyRole.DeniedAction">
+            <summary>
+            无权限action
+            </summary>
+        </member>
+        <member name="M:Authority.Web.Api.PolicyRequirement.PolicyRole.#ctor(System.String)">
+            <summary>
+            构造
             </summary>
         </member>
         <member name="M:Web.Api.Log.ILoggerHelper.Debug(System.Object,System.String)">

@@ -1,8 +1,10 @@
-﻿using Authority.IRepository.Base;
+﻿using Authority.Common.Helper;
+using Authority.IRepository.Base;
 using Authority.IRepository.IUnitOfWord;
 using Authority.repository.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,7 +19,7 @@ namespace Authority.repository.Base
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class, new()
     {
-
+        #region DI
         public DbcontextRepository Context;
         internal DbSet<TEntity> Dbset { get; set; }
 
@@ -27,26 +29,32 @@ namespace Authority.repository.Base
             Context = DbcontextRepository.Context;
             Dbset = Context.Set<TEntity>();
             _myLogger = myLogger;
-            var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
-            var sqlType = config["Sql:sqlType"];
+            var sqltype = "Sql:sqlType";
+            var sqlstr = "Sql:str";
+            var sql = JsonHelper.GetDbConnection(sqltype, sqlstr);
             var sqlrealType = "";
-            if (sqlType == "1")
+            if (sql.Item1 == "1")
             {
                 sqlrealType = "sqlserver";
             }
-            else if (sqlType == "2")
+            else if (sql.Item1 == "2")
             {
                 sqlrealType = "Oracle";
             }
-            else if (sqlType == "3")
+            else if (sql.Item1 == "3")
             {
                 sqlrealType = "Mysql";
+            }
+            else if (sql.Item1 == "4")
+            {
+
+                sqlrealType = "sqlite";
             }
 
             _myLogger.LogInformation($"数据库类型是{sqlrealType}");
         }
+
+        #endregion
 
         #region 1.0 新增实体，返回对象
         /// <summary>
@@ -57,10 +65,13 @@ namespace Authority.repository.Base
         public async Task<TEntity> Add(TEntity model)
         {
             _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行新增Model 返回行数");
-            await Dbset.AddAsync(model);
-            Context.SaveChanges();
-            return model;
+              await Dbset.AddAsync(model);
+            if (await Context.SaveChangesAsync() > 1)
+            {
+                return model;
 
+            }
+            return null;
         }
         #endregion
 
@@ -73,7 +84,7 @@ namespace Authority.repository.Base
         /// <returns></returns>
         public async Task<int> AddModel(TEntity model)
         {
-            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行增加Model 返回Model");
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行增加Model 返回Model");           
             await Dbset.AddAsync(model);
             return await Context.SaveChangesAsync();
 
@@ -113,7 +124,7 @@ namespace Authority.repository.Base
                 Dbset.Remove(u); //标识为删除状态
             });
 
-            return Context.SaveChanges();
+            return await Context.SaveChangesAsync();
 
         }
         #endregion
@@ -172,13 +183,7 @@ namespace Authority.repository.Base
         {
             _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行查询");
             return await Dbset.Where(whereLambda).AsNoTracking().ToListAsync();
-
-
         }
-
-
-
-
         #endregion
 
         #region 1.0 修改实体
@@ -206,6 +211,22 @@ namespace Authority.repository.Base
 
         #endregion
 
+        #region 1.0 更新 返回更新受影响的行数
 
+        public async Task<int> UpdateContext(TEntity Model)
+        {
+            Context.Update(Model);
+            return await Context.SaveChangesAsync();
+        }
+
+        #endregion
+
+        #region  查询 Iqueryable
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            _myLogger.LogInformation($"{typeof(TEntity)} Model 正在执行查询返回Iqueryable");
+            return Dbset.Where(whereLambda).AsNoTracking();
+        }
+        #endregion
     }
 }

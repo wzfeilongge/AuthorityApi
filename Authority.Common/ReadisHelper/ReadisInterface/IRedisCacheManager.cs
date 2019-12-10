@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,5 +27,9 @@ namespace Authority.Common.ReadisHelper.ReadisInterface
         void Clear();
 
         bool SetValue(string key, byte[] value);
+
+        bool SetNx(string key, long time, double expireMS);
+
+        ConnectionMultiplexer GetRedisConnection();
     }
 }

@@ -19,7 +19,7 @@ namespace Authoritiy.IServices
 
         Task<Departments> QueryDepartment(string DepartmentName);
       
-        Task<bool> UpdateDepartments();
+        Task<int> UpdateDepartments(Departments departments=null);
 
     }
 }

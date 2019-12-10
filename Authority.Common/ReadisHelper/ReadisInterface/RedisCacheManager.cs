@@ -23,10 +23,9 @@ namespace Authority.Common.ReadisHelper.ReadisInterface
             }
             this._redisConnenctionString = redisConfiguration;
             this._redisConnection = GetRedisConnection();
-
         }
 
-        private ConnectionMultiplexer GetRedisConnection()
+        public ConnectionMultiplexer GetRedisConnection()
         {
             //如果已经连接实例，直接返回
             if (this._redisConnection != null && this._redisConnection.IsConnected)
@@ -56,7 +55,7 @@ namespace Authority.Common.ReadisHelper.ReadisInterface
 
         public void Clear()
         {
-            foreach (var endPoint in this.GetRedisConnection().GetEndPoints())
+           foreach (var endPoint in this.GetRedisConnection().GetEndPoints())
             {
                 var server = this.GetRedisConnection().GetServer(endPoint);
                 foreach (var key in server.Keys())
@@ -76,7 +75,7 @@ namespace Authority.Common.ReadisHelper.ReadisInterface
             }
             else
             {
-                return default(TEntity);
+                return default;
             }
 
         }
@@ -108,6 +107,11 @@ namespace Authority.Common.ReadisHelper.ReadisInterface
         public bool SetValue(string key, byte[] value)
         {
             return _redisConnection.GetDatabase().StringSet(key, value, TimeSpan.FromSeconds(120));
+        }
+
+        public bool SetNx(string key, long time, double expireMS)
+        {        
+            return false;
         }
     }
 }

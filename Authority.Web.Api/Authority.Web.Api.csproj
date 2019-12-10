@@ -10,6 +10,7 @@
     <NoWarn>1701;1702;1591</NoWarn>
     <OutputPath></OutputPath>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,12 +23,17 @@
     <PackageReference Include="Citms.EntityFrameworkCore.Oracle" Version="1.0.9" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
     <PackageReference Include="MiniProfiler.Shared" Version="4.0.180" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.17" />
     <PackageReference Include="NLog" Version="4.6.7" />
@@ -37,7 +43,6 @@
 
   <ItemGroup>
     <Folder Include="Log\" />
-    <Folder Include="JwtHelper\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,12 +50,19 @@
     <ProjectReference Include="..\Authority.Business\Authority.Business.csproj" />
     <ProjectReference Include="..\Authority.Common\Authority.Common.csproj" />
     <ProjectReference Include="..\Authority.IRepository\Authority.IRepository.csproj" />
+    <ProjectReference Include="..\Authority.repository\Authority.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Authority.Web.Api.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

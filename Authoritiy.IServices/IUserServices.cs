@@ -71,6 +71,10 @@ namespace Authoritiy.IServices
         /// 测试
         /// </summary>
         /// <returns></returns>
-        Task Test();
+        Task<List<SnowShowModel>> Test();
+
+        Task<User> QuerySelf(User user);
+
+
     }
 }

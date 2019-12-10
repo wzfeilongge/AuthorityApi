@@ -6,6 +6,7 @@ using Authoritiy.IServices;
 using Authority.Common.HttpHelper;
 using Authority.Model.Model;
 using Authority.Web.Api.ControllerModel;
+using Authority.Web.Api.PolicyRequirement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace Authority.Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = Permissions.Name)]
     public class ERPController : ControllerBase
     {
         private readonly ISaleServices _saleServices;
@@ -30,7 +32,7 @@ namespace Authority.Web.Api.Controllers
             _saleServices = saleServices;
             _productServices = productServices;
             _Apiloger = Apiloger;
-           
+
         }
 
         #region 销售类
@@ -40,7 +42,6 @@ namespace Authority.Web.Api.Controllers
         /// <param name="saleQuery"></param>
         /// <returns></returns>
         [HttpGet("QeurySale", Name = "QeurySale")]
-        [Authorize(Policy = "SystemOrAdmin")]
         public async Task<IActionResult> QeurySale([FromBody] SaleQuery saleQuery)
         {
             var list = await _saleServices.QuerySale(saleQuery.Rule, saleQuery.Count, saleQuery.Page);
@@ -57,19 +58,17 @@ namespace Authority.Web.Api.Controllers
         /// <param name="sale"></param>
         /// <returns></returns>
         [HttpPost("AddSale", Name = "AddSale")]
-        [Authorize(Policy = "SystemOrAdmin")]
-        [UseTran]
         public async Task<IActionResult> AddSale([FromBody] Sale sale)
         {
             if (ModelState.IsValid)
             {
-               
-                    var istrue = await _saleServices.AddSale(sale);
-                    if (istrue)
-                    {
-                        return Ok(new SucessModel());
-                    }
-               
+
+                var istrue = await _saleServices.AddSale(sale);
+                if (istrue)
+                {
+                    return Ok(new SucessModel());
+                }
+
             }
             return Ok(new JsonFailCatch("增加销售记录失败"));
         }
@@ -77,13 +76,12 @@ namespace Authority.Web.Api.Controllers
         #endregion
 
         #region  商品类
-
         /// <summary>
         /// 查询所有的商品
         /// </summary>
         /// <returns></returns>
         [HttpGet("QueryProduct", Name = "QueryProduct")]
-        [Authorize(Policy = "SystemOrAdmin")]
+        [AllowAnonymous]
         public async Task<IActionResult> QueryProduct()
         {
             var list = await _productServices.QueryProductList();
@@ -100,7 +98,7 @@ namespace Authority.Web.Api.Controllers
         /// <param name="queryProductName">查询商品Model</param>
         /// <returns></returns>
         [HttpGet("QueryProductName", Name = "QueryProductName")]
-        [Authorize(Policy = "SystemOrAdmin")]
+        [AllowAnonymous]
         public async Task<IActionResult> QueryProductName([FromBody] QueryProductName queryProductName)
         {
             if (ModelState.IsValid)
@@ -121,7 +119,7 @@ namespace Authority.Web.Api.Controllers
         /// <param name="queryProductName">查询商品Model</param>
         /// <returns></returns>
         [HttpGet("QueryProductCount", Name = "QueryProductCount")]
-        [Authorize(Policy = "SystemOrAdmin")]
+        [AllowAnonymous]
         public async Task<IActionResult> QueryProductCount([FromBody] QueryProductId queryProductName)
         {
             if (ModelState.IsValid)
@@ -141,8 +139,6 @@ namespace Authority.Web.Api.Controllers
         /// <param name="product"></param>
         /// <returns></returns>
         [HttpPut("EditProduct", Name = "EditProduct")]
-        [Authorize(Policy = "SystemOrAdmin")]
-        [UseTran]
         public async Task<IActionResult> EditProduct([FromBody] Product product)
         {
             if (ModelState.IsValid)

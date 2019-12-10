@@ -7,6 +7,7 @@ using Authority.Applicaion.ViewModel;
 using Authority.Business;
 using Authority.Business.Business;
 using Authority.Web.Api.ControllerModel;
+using Authority.Web.Api.PolicyRequirement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace Authority.Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = Permissions.Name)]
     public class BankController : ControllerBase
     {
         private readonly IBankHandle _bankHandle;
@@ -35,6 +37,7 @@ namespace Authority.Web.Api.Controllers
 
 
         [HttpGet("CreateBusiness", Name = "CreateBusiness")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateBusiness([FromBody] BankCreateModel bankCreateModel)
         {
             var query = await _bankHandle.GetBusinessMan();
@@ -56,7 +59,6 @@ namespace Authority.Web.Api.Controllers
         }
 
         [HttpGet("CallNumber", Name = "CallNumber")]
-        [Authorize(Policy =("SystemOrAdmin"))]
         public async Task<IActionResult> CallNumber([FromBody]CallNumberViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -76,8 +78,9 @@ namespace Authority.Web.Api.Controllers
                     {
                         return Ok(new JsonResult("正在重新呼叫"));
                     }
-                    else {
-                        var models=  await _businessManServices.GetModelAsync(u=>u.Id==id);
+                    else
+                    {
+                        var models = await _businessManServices.GetModelAsync(u => u.Id == id);
                         models.Istrue = true;
                         await _businessManServices.Modify(models);
                         return Ok(new JsonFailCatch("重呼失败,下一个用户"));

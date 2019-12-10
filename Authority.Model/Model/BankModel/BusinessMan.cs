@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Authority.Model.BankModel
@@ -11,6 +12,7 @@ namespace Authority.Model.BankModel
         /// 凭条票据号
         /// </summary>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         /// <summary>

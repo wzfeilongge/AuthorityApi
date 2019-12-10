@@ -39,6 +39,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authority.Services", "Autho
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authority.Model", "Authority.Model\Authority.Model.csproj", "{63563778-CFA3-471A-96BC-8DD8E78C7FA2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xunit", "Xunit", "{4CB888C4-D615-48DF-964E-6414D5FDCA47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTest", "XUnitTest\XUnitTest.csproj", "{AD6664A8-D457-4E09-9FFB-7C6A909EDA48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,10 @@ Global
 		{63563778-CFA3-471A-96BC-8DD8E78C7FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63563778-CFA3-471A-96BC-8DD8E78C7FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63563778-CFA3-471A-96BC-8DD8E78C7FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD6664A8-D457-4E09-9FFB-7C6A909EDA48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6664A8-D457-4E09-9FFB-7C6A909EDA48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6664A8-D457-4E09-9FFB-7C6A909EDA48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6664A8-D457-4E09-9FFB-7C6A909EDA48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +103,7 @@ Global
 		{73F4F49D-977E-4F27-935A-D0CF03296E33} = {86C36F3F-360C-4EBB-8EFC-67B3ABB1356D}
 		{DB72DF23-E57C-4D08-A85E-8D4E6690D66A} = {67D678A0-5D61-492E-A002-51371120C403}
 		{63563778-CFA3-471A-96BC-8DD8E78C7FA2} = {7C0745CE-DD98-47D0-AC8A-0E269A9FFDCB}
+		{AD6664A8-D457-4E09-9FFB-7C6A909EDA48} = {4CB888C4-D615-48DF-964E-6414D5FDCA47}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68F4F5C0-3D3E-4257-B046-D5F5529E7EBC}

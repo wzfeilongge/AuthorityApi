@@ -1,6 +1,11 @@
-﻿using Authority.Common.HttpHelper;
+﻿using Authority.Common.Helper;
+using Authority.Common.HttpHelper;
 using Authority.Common.ReadisHelper.ReadisInterface;
+using Authority.Web.Api.ControllerModel;
+using Castle.Core.Internal;
 using Castle.DynamicProxy;
+using ServiceStack;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +25,7 @@ namespace Authority.Web.Api.AOP
         {
             var method = invocation.MethodInvocationTarget ?? invocation.Method;
             //对当前方法的特性验证
-            var qCachingAttribute = method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(CachingAttribute)) as CachingAttribute;
-            if (qCachingAttribute != null)
+            if (method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(CachingAttribute)) is CachingAttribute qCachingAttribute)
             {
                 //获取自定义缓存键，这个和Memory内存缓存是一样的，不细说
                 var cacheKey = CustomCacheKey(invocation);
@@ -43,10 +47,9 @@ namespace Authority.Web.Api.AOP
                         if (resultTypes.Count() > 0)
                         {
                             var resultType = resultTypes.FirstOrDefault();
-                            // 核心3，直接序列化成 dynamic 类型，之前我一直纠结特定的实体
-                            dynamic temp = Newtonsoft.Json.JsonConvert.DeserializeObject(cacheValue, resultType);
-                            response = Task.FromResult(temp);
-
+                           // 核心3，直接序列化成 dynamic 类型，之前我一直纠结特定的实体
+                             dynamic temp = Newtonsoft.Json.JsonConvert.DeserializeObject(cacheValue, resultType);                             
+                            response = Task.FromResult(temp);                      
                         }
                         else
                         {
@@ -57,7 +60,7 @@ namespace Authority.Web.Api.AOP
                     else
                     {
                         // 核心4，要进行 ChangeType
-                        response = System.Convert.ChangeType(_cache.Get<object>(cacheKey), type);
+                        response = Convert.ChangeType(_cache.Get<object>(cacheKey), type);
                     }
 
                     invocation.ReturnValue = response;
@@ -70,7 +73,6 @@ namespace Authority.Web.Api.AOP
                 if (!string.IsNullOrWhiteSpace(cacheKey))
                 {
                     object response;
-
                     //Type type = invocation.ReturnValue?.GetType();
                     var type = invocation.Method.ReturnType;
                     if (type != null && typeof(Task).IsAssignableFrom(type))
@@ -96,8 +98,7 @@ namespace Authority.Web.Api.AOP
         {
             var typeName = invocation.TargetType.Name;
             var methodName = invocation.Method.Name;
-            var methodArguments = invocation.Arguments.Select(GetArgumentValue).Take(3).ToList();//获取参数列表，我最多需要三个即可
-
+            var methodArguments = invocation.Arguments.Select(GetArgumentValue).Take(10).ToList();//获取参数列表，我最多需要10个即可
             string key = $"{typeName}:{methodName}:";
             foreach (var param in methodArguments)
             {
@@ -106,7 +107,6 @@ namespace Authority.Web.Api.AOP
 
             return key.TrimEnd(':');
         }
-
 
         //object 转 string
         private string GetArgumentValue(object arg)
@@ -119,8 +119,5 @@ namespace Authority.Web.Api.AOP
 
             return "";
         }
-
-
-
     }
 }

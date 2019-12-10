@@ -3,6 +3,7 @@ using Authority.Common.HttpHelper;
 using Authority.IRepository;
 using Authority.Model.Model;
 using Authority.Services.BaseService;
+using Snowflake.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace Authority.Services
         {
             if (sale != null)
             {
+              
+                
                 var product = await _productRepository.GetModelAsync(u => u.Id == sale.ProductId && u.Quantity >= sale.Quantity);
                 if (product != null)
                 {

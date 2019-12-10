@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Authority.Model.Model
@@ -8,7 +9,8 @@ namespace Authority.Model.Model
     public class User
     {
         [Key]
-        public int Id { get; set; }           //角色唯一序列号
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long Id { get; set; }           //角色唯一序列号
 
         public int State { get; set; }        //是否可用
 
@@ -31,6 +33,5 @@ namespace Authority.Model.Model
         public string HospitalName { get; set; } //无用
 
         public string AdminPassword { get; set; } //无用
-
     }
 }

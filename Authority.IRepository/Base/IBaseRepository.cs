@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,11 @@ namespace Authority.IRepository.Base
         Task<int> Modify(T model);
 
         Task<int> Modify(T model, params string[] propertyNames);
+
+        Task<int> UpdateContext(T Model);
+
+        IQueryable<T> GetAll(Expression<Func<T, bool>> whereLambda);
+
 
     }
 }

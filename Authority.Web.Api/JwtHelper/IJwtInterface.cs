@@ -14,5 +14,9 @@ namespace Authority.Web.Api.JwtHelper
 
         TokenModelJwt SerializeJwt(string jwtStr);
 
+
+
+    
+
     }
 }

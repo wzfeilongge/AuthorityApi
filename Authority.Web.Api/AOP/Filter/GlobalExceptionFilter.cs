@@ -34,11 +34,11 @@ namespace Authority.Web.Api.AOP.Filter
             }
             context.Result = new InternalServerErrorObjectResult(json);
 
-            MiniProfiler.Current.CustomTiming("Errors：", json.Message);
-
-
             //采用log4net 进行错误日志记录
             _loggerHelper.Error(json.Message, WriteLog(json.Message, context.Exception));
+         
+            MiniProfiler.Current.CustomTiming("Errors：", json.Message);
+
         }
 
         public class InternalServerErrorObjectResult : ObjectResult

@@ -1,5 +1,6 @@
 ﻿using Authority.Common.HttpHelper;
 using Authority.IRepository.IUnitOfWord;
+using Castle.Core.Internal;
 using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -28,12 +29,12 @@ namespace Authority.Web.Api.AOP.Filter
             var method = invocation.MethodInvocationTarget ?? invocation.Method;
             //对当前方法的特性验证
             //如果需要验证
-            if (method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(UseTranAttribute)) is UseTranAttribute)
+            if (method.GetCustomAttributes(true).Find(x => x.GetType() == typeof(UseTranAttribute)) is UseTranAttribute)
             {
                 try
                 {
                     Console.WriteLine($"UnintOfWord strat");
-                    //_unitOfWork.BeginTran();
+                    _unitOfWork.BeginTran();
                     invocation.Proceed();
                     // 异步获取异常，普通的 try catch 外层不能达到目的，毕竟是异步的
                     if (IsAsyncMethod(invocation.Method))
@@ -50,7 +51,7 @@ namespace Authority.Web.Api.AOP.Filter
                         }
                         else //Task<TResult>
                         {
-                            invocation.ReturnValue = InternalAsyncHelper.CallAwaitTaskWithPostActionAndFinallyAndGetResult(
+                             invocation.ReturnValue = InternalAsyncHelper.CallAwaitTaskWithPostActionAndFinallyAndGetResult(
                              invocation.Method.ReturnType.GenericTypeArguments[0],
                              invocation.ReturnValue,
                              async () => await TestActionAsync(invocation),
@@ -82,9 +83,10 @@ namespace Authority.Web.Api.AOP.Filter
                 );
         }
 
-        private async Task TestActionAsync(IInvocation invocation)
+        private async Task<int> TestActionAsync(IInvocation invocation)
         {
-
+          //  _unitOfWork.BeginTran();
+            return await Task.FromResult(0);
         }
 
         internal static class InternalAsyncHelper

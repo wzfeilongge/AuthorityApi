@@ -10,20 +10,26 @@ using System.Threading.Tasks;
 
 namespace Authority.Web.Api.JwtHelper
 {
-    public class JwtHelpers: IJwtInterface
+    public class JwtHelpers : IJwtInterface
     {
+
+
+
+
+
 
         /// <summary>
         /// 颁发JWT字符串
         /// </summary>
         /// <param name="tokenModel"></param>
         /// <returns></returns>
-        public  string IssueJwt(TokenModelJwt tokenModel)
+
+        public string IssueJwt(TokenModelJwt tokenModel)
         {
             string iss = Appsettings.app(new string[] { "Audience", "Issuer" });
             string aud = Appsettings.app(new string[] { "Audience", "Audience" });
             string secret = Appsettings.app(new string[] { "Audience", "Secret" });
-            
+
             var claims = new List<Claim>
                 {
                  /*
@@ -38,13 +44,14 @@ namespace Authority.Web.Api.JwtHelper
                 //这个就是过期时间，目前是过期1小时，可自定义，注意JWT有自己的缓冲过期时间 缓冲时间已设置为0
                 new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddHours(1)).ToUnixTimeSeconds()}"),
                 new Claim(JwtRegisteredClaimNames.Iss,iss),
-                new Claim(JwtRegisteredClaimNames.Aud,aud),               
+                new Claim(JwtRegisteredClaimNames.Aud,aud),       
+              //  new Claim(JwtRegisteredClaimNames.Typ,)
               //  new Claim(ClaimTypes.Role,tokenModel.Role),//为了解决一个用户多个角色(比如：Admin,System)，用下边的方法
                };
-
             // 可以将一个用户的多个角色全部赋予；
             // 作者：DX 提供技术支持；
             claims.AddRange(tokenModel.Role.Split(',').Select(s => new Claim(ClaimTypes.Role, s)));
+            claims.AddRange(tokenModel.Role.Split(',').Select(s => new Claim(JwtRegisteredClaimNames.Typ, s)));
             //秘钥 (SymmetricSecurityKey 对安全性的要求，密钥的长度太短会报出异常)
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -62,7 +69,7 @@ namespace Authority.Web.Api.JwtHelper
         /// </summary>
         /// <param name="jwtStr"></param>
         /// <returns></returns>
-        public  TokenModelJwt SerializeJwt(string jwtStr)
+        public TokenModelJwt SerializeJwt(string jwtStr)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = jwtHandler.ReadJwtToken(jwtStr);
